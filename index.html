@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>ART OF DRAKE ★</title>
+
+  <meta name="description" content="BSIT Student & Creative Front-End Web Developer Portfolio." />
+  <meta property="og:title" content="ART OF DRAKE ★ // CYBER CODEX" />
+  <meta property="og:description" content="BSIT Student & Creative Front-End Web Developer Portfolio." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/image7.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ART OF DRAKE ★ // CYBER CODEX" />
+  <meta name="twitter:description" content="BSIT Student & Creative Front-End Web Developer Portfolio." />
+  <meta name="twitter:image" content="assets/image7.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&family=Righteous&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800&family=VT323&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="retro-cursor-pointer" id="retro-cursor" aria-hidden="true">
+    <div class="cursor-crosshair"></div>
+    <div class="cursor-dot"></div>
+  </div>
+
+  <canvas id="ambient-canvas" aria-hidden="true"></canvas>
+
+  <div class="k-beauty-glow glow-peach" aria-hidden="true"></div>
+  <div class="k-beauty-glow glow-lavender" aria-hidden="true"></div>
+  <div class="film-dither-grain" id="layer-grain" aria-hidden="true"></div>
+  <div class="camcorder-scanlines" id="layer-scanlines" aria-hidden="true"></div>
+  <div class="crt-vignette" id="layer-vignette" aria-hidden="true"></div>
+
+  <aside class="osd-bar osd-top">
+    <div class="osd-corner osd-tl">
+      <span class="rec-dot">●</span> <span class="osd-text" id="live-rec-timer">REC 00:24:12 [SP]</span>
+    </div>
+
+    <div class="osd-center-controls">
+      <button class="osd-pill-btn recruiter-mode-btn" id="mode-toggle" title="Toggle Executive Clean Dossier Mode" aria-label="Toggle Clean Mode">
+        <span class="mode-icon">✦</span> <span id="mode-label">VIEW: CODEX</span>
+      </button>
+
+      <button class="osd-pill-btn" id="fx-toggle" title="Toggle CRT Effects (Scanlines & Vignette)" aria-label="Toggle CRT FX">
+        <span id="fx-icon">📺</span> <span id="fx-label">FX: CRT</span>
+      </button>
+
+      <button class="osd-pill-btn" id="theme-toggle" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+        <span class="theme-icon">◐</span> <span id="theme-label">DARK</span>
+      </button>
+
+      <button class="osd-pill-btn" id="sfx-toggle" title="Toggle Sound Effects" aria-label="Toggle Sound Effects">
+        <span id="sfx-icon">🔊</span> <span id="sfx-label">SFX: ON</span>
+      </button>
+
+      <button class="osd-pill-btn" id="credits-btn" title="Image & Media Credits" aria-label="Media Credits">
+        <span>📎</span> <span>CREDITS</span>
+      </button>
+
+      <a href="assets/resume.pdf" target="_blank" rel="noopener noreferrer" class="osd-pill-btn resume-hud-btn" title="Download Curriculum Vitae (PDF)" aria-label="Download Resume">
+        <span>📄</span> <span>RESUME.PDF</span>
+      </a>
+
+      <button class="osd-pill-btn music-trigger-btn" id="music-menu-btn" title="Open Retro Walkman (M)" aria-label="Open Music Player">
+        <span class="burger-icon">☰</span> <span>WALKMAN</span>
+        <span class="mini-eq-pulse" id="music-playing-indicator"></span>
+      </button>
+    </div>
+
+    <div class="osd-corner osd-tr">
+      <span class="osd-text" id="fps-counter">60 FPS ✦ V-SYNC</span>
+    </div>
+  </aside>
+
+  <aside class="osd-bar osd-bottom">
+    <div class="osd-corner osd-bl">
+      <span class="osd-text">ART OF DRAKE // SYSTEM CORE v4.2</span>
+    </div>
+    <div class="osd-corner osd-br">
+      <span class="osd-text">BSIT DEV CODEX ★ PS-CARD [15/15 BLOCKS]</span>
+    </div>
+  </aside>
+
+  <div class="y2k-toast" id="toast-alert" role="status" aria-live="polite">
+    <span id="toast-message">✦ WELCOME TO ART OF DRAKE CODEX</span>
+  </div>
+
+  <div class="crt-shutter" id="crt-shutter" aria-hidden="true">
+    <div class="shutter-line"></div>
+  </div>
+
+  <aside class="retro-audio-pod" id="retro-player" aria-label="Sony Retro Walkman" role="dialog" aria-modal="false">
+    <div class="player-housing">
+      <div class="player-top-strip">
+        <div class="player-lcd-label">
+          <span class="player-dot">●</span> SONY MD WALKMAN MZ-99
+        </div>
+        <button type="button" class="player-close-btn" id="close-player-btn" aria-label="Close Walkman Player">✕</button>
+      </div>
+
+      <div class="minidisc-slot-bay" id="md-slot-bay">
+        <div class="md-cartridge-housing">
+          <div class="md-shutter-window">
+            <div class="md-optical-disc" id="md-spinning-disc">
+              <div class="md-disc-hole"></div>
+              <div class="md-disc-laser-track"></div>
+            </div>
+          </div>
+          <div class="md-cartridge-label">
+            <span class="md-brand-txt">SONY Neige MD 80</span>
+            <span class="md-laser-status" id="md-laser-indicator">● STANDBY</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="player-screen">
+        <div class="screen-track-meta">
+          <span class="screen-track-num" id="screen-track-index">TRK 01</span>
+          <span class="screen-format" id="screen-format-badge">24-BIT ATRAC // STEREO</span>
+        </div>
+        <div class="screen-title-scroll">
+          <span class="screen-marquee" id="player-track-name">Joyride.mp3</span>
+        </div>
+        <div class="screen-timer-row">
+          <span id="player-current-time">00:00</span>
+          <canvas id="walkman-eq-canvas" width="60" height="14" class="walkman-canvas-eq" title="Real-time Spectrum"></canvas>
+          <span id="player-duration">02:37</span>
+        </div>
+      </div>
+
+      <div class="player-seek-wrapper">
+        <input type="range" class="player-range-bar" id="player-seek-slider" min="0" max="100" value="0" aria-label="Track Progress" />
+      </div>
+
+      <div class="player-hardware-controls">
+        <button type="button" class="hw-btn" id="hw-prev" title="Previous Track" aria-label="Previous Track">⏮</button>
+        <button type="button" class="hw-btn hw-play-btn" id="hw-play" title="Play/Pause" aria-label="Play or Pause">▶</button>
+        <button type="button" class="hw-btn" id="hw-next" title="Next Track" aria-label="Next Track">⏭</button>
+        <button type="button" class="hw-btn" id="hw-eject" title="Eject MiniDisc Tray" aria-label="Eject MiniDisc">⏏</button>
+        <button type="button" class="hw-btn" id="hw-mute" title="Mute/Unmute" aria-label="Mute Volume">🔈</button>
+      </div>
+
+      <div class="walkman-dsp-row">
+        <button type="button" class="dsp-pill-btn" id="dsp-eq-btn" title="Toggle Equalizer Preset">EQ: FLAT</button>
+        <button type="button" class="dsp-pill-btn" id="dsp-lofi-btn" title="Toggle Lofi Tape & Vinyl Crackle">TAPE NOISE: OFF</button>
+      </div>
+
+      <div class="player-volume-row">
+        <span class="vol-icon">VOL</span>
+        <input type="range" class="player-range-bar" id="player-vol-slider" min="0" max="1" step="0.05" value="0.8" aria-label="Volume" />
+      </div>
+
+      <div class="player-playlist">
+        <div class="playlist-header">MINIDISC TOC [LOCAL AUDIO RACK]</div>
+        <ul class="playlist-items" id="playlist-list"></ul>
+      </div>
+    </div>
+  </aside>
+
+  <audio id="local-audio-core" preload="metadata"></audio>
+
+  <main class="viewport-stage" id="menu-view">
+    <header class="y2k-masthead">
+      <div class="title-lockup">
+        <span class="y2k-halo-star">✦</span>
+        <h1 class="y2k-chrome-title" data-text="ART OF DRAKE">ART OF DRAKE</h1>
+        <span class="y2k-halo-star">★</span>
+        <span class="diary-sticker-note">vol. 01 '99–'04</span>
+      </div>
+    </header>
+
+    <!-- The 6-Chapter Rack -->
+    <section class="slender-rack" id="slender-rack" aria-label="Chapter Selection">
+      <!-- Chapter 01 -->
+      <article class="slender-card" data-chapter="about" data-color="ch1" tabindex="0" role="button" aria-label="Chapter 1: About Me">
+        <div class="card-housing">
+          <div class="corner-tape"></div>
+          <img class="card-visual" src="assets/image7.png" alt="About Visual" onerror="this.src='https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=500&q=80'" />
+          <div class="hologram-shimmer"></div>
+          <div class="card-glare"></div>
+          <div class="badge-ribbon">
+            <span class="y2k-badge-txt">CH. 01 ✦</span>
+          </div>
+        </div>
+        <div class="card-meta">
+          <h2 class="meta-title">About Me</h2>
+          <span class="meta-tag">diary · status</span>
+        </div>
+      </article>
+
+      <!-- Chapter 02 -->
+      <article class="slender-card" data-chapter="projects" data-color="ch2" tabindex="0" role="button" aria-label="Chapter 2: Projects">
+        <div class="card-housing">
+          <div class="corner-tape"></div>
+          <img class="card-visual" src="assets/image2.png" alt="Projects Visual" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80'" />
+          <div class="hologram-shimmer"></div>
+          <div class="card-glare"></div>
+          <div class="badge-ribbon">
+            <span class="y2k-badge-txt">CH. 02 ✦</span>
+          </div>
+        </div>
+        <div class="card-meta">
+          <h2 class="meta-title">Projects</h2>
+          <span class="meta-tag">missions · builds</span>
+        </div>
+      </article>
+
+      <!-- Chapter 03 -->
+      <article class="slender-card" data-chapter="skills" data-color="ch3" tabindex="0" role="button" aria-label="Chapter 3: Skills">
+        <div class="card-housing">
+          <div class="corner-tape"></div>
+          <img class="card-visual" src="assets/image3.png" alt="Skills Visual" onerror="this.src='https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=500&q=80'" />
+          <div class="hologram-shimmer"></div>
+          <div class="card-glare"></div>
+          <div class="badge-ribbon">
+            <span class="y2k-badge-txt">CH. 03 ✦</span>
+          </div>
+        </div>
+        <div class="card-meta">
+          <h2 class="meta-title">Skills</h2>
+          <span class="meta-tag">skill-tree · stats</span>
+        </div>
+      </article>
+
+      <!-- Chapter 04 -->
+      <article class="slender-card" data-chapter="archive" data-color="ch4" tabindex="0" role="button" aria-label="Chapter 4: Archive">
+        <div class="card-housing">
+          <div class="corner-tape"></div>
+          <img class="card-visual" src="assets/image4.png" alt="Archive Visual" onerror="this.src='https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=500&q=80'" />
+          <div class="hologram-shimmer"></div>
+          <div class="card-glare"></div>
+          <div class="badge-ribbon">
+            <span class="y2k-badge-txt">CH. 04 ✦</span>
+          </div>
+        </div>
+        <div class="card-meta">
+          <h2 class="meta-title">Archive</h2>
+          <span class="meta-tag">floppy · hex dump</span>
+        </div>
+      </article>
+
+      <!-- Chapter 05 -->
+      <article class="slender-card" data-chapter="contact" data-color="ch5" tabindex="0" role="button" aria-label="Chapter 5: Contact">
+        <div class="card-housing">
+          <div class="corner-tape"></div>
+          <img class="card-visual" src="assets/image5.png" alt="Contact Visual" onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=500&q=80'" />
+          <div class="hologram-shimmer"></div>
+          <div class="card-glare"></div>
+          <div class="badge-ribbon">
+            <span class="y2k-badge-txt">CH. 05 ✦</span>
+          </div>
+        </div>
+        <div class="card-meta">
+          <h2 class="meta-title">Contact</h2>
+          <span class="meta-tag">comm-link · terminal</span>
+        </div>
+      </article>
+
+      <!-- Chapter 06 -->
+      <article class="slender-card" data-chapter="elsewhere" data-color="ch6" tabindex="0" role="button" aria-label="Chapter 6: Elsewhere">
+        <div class="card-housing">
+          <div class="corner-tape"></div>
+          <img class="card-visual" src="assets/image6.png" alt="Elsewhere Visual" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80'" />
+          <div class="hologram-shimmer"></div>
+          <div class="card-glare"></div>
+          <div class="badge-ribbon">
+            <span class="y2k-badge-txt">CH. 06 ✦</span>
+          </div>
+        </div>
+        <div class="card-meta">
+          <h2 class="meta-title">Elsewhere</h2>
+          <span class="meta-tag">fm radio · tape deck</span>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <section class="reader-dossier" id="reader-view" aria-hidden="true">
+    <div class="reader-dynamic-backdrop" id="reader-bg-layer" aria-hidden="true">
+      <div class="backdrop-image-layer" id="backdrop-img-target"></div>
+      <div class="backdrop-film-scrim"></div>
+      <div class="backdrop-cyber-grid"></div>
+    </div>
+
+    <div class="editorial-container">
+      <header class="dossier-topbar">
+        <button class="back-key-btn" id="close-reader" title="Return to Menu (ESC)">
+          <span class="arrow-sym">←</span>
+          <span>INDEX [ESC]</span>
+        </button>
+
+        <div class="cd-now-playing">
+          <span class="disc-icon" id="dossier-disc-icon">💿</span>
+          <span class="dossier-ch-title" id="reader-badge">TRACK 01</span>
+        </div>
+
+        <div class="topbar-callout">
+          <span class="live-dot-indicator"></span>
+          <span id="reader-status-tag">ART OF DRAKE // IDENTITY ARCHIVE</span>
+        </div>
+      </header>
+
+      <div class="dossier-scroll-area" id="reader-content-body"></div>
+
+      <footer class="dossier-bottombar">
+        <button class="track-shift-btn" id="btn-prev-chap">⏮ TRACK PREV</button>
+        <span class="hint-pill">SWIPE OR USE [ ← / → ] · [ESC] EXIT</span>
+        <button class="track-shift-btn" id="btn-next-chap">TRACK NEXT ⏭</button>
+      </footer>
+    </div>
+  </section>
+
+  <!-- Interactive Case Study / Specification Inspector Modal -->
+  <aside class="retro-modal" id="retro-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-top">
+        <span class="modal-title" id="modal-title">SPECIFICATION INSPECTOR</span>
+        <button type="button" class="modal-close-btn" id="modal-close" aria-label="Close dialog">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </aside>
+
+  <script src="script.js"></script>
+</body>
+</html>
