@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&family=Righteous&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800&family=VT323&display=swap" rel="stylesheet">
-  <link rel="icon" type="png" href="assets/favicon.png">
+  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -36,6 +36,7 @@
   <div class="camcorder-scanlines" id="layer-scanlines" aria-hidden="true"></div>
   <div class="crt-vignette" id="layer-vignette" aria-hidden="true"></div>
 
+  <!-- Top HUD Bar -->
   <aside class="osd-bar osd-top">
     <div class="osd-corner osd-tl">
       <span class="rec-dot">●</span> <span class="osd-text" id="live-rec-timer">REC 00:24:12 [SP]</span>
@@ -77,6 +78,7 @@
     </div>
   </aside>
 
+  <!-- Bottom HUD Bar -->
   <aside class="osd-bar osd-bottom">
     <div class="osd-corner osd-bl">
       <span class="osd-text">ART OF DRAKE // SYSTEM CORE v4.2</span>
@@ -94,6 +96,7 @@
     <div class="shutter-line"></div>
   </div>
 
+  <!-- Sony MD Walkman Widget -->
   <aside class="retro-audio-pod" id="retro-player" aria-label="Sony Retro Walkman" role="dialog" aria-modal="false">
     <div class="player-housing">
       <div class="player-top-strip">
@@ -162,15 +165,24 @@
     </div>
   </aside>
 
-  <audio id="local-audio-core" preload="metadata"></audio>
+  <!-- Audio Core (Defaults Strictly to Muted & No Autoplay on Initial Mount) -->
+  <audio id="local-audio-core" preload="none" muted></audio>
 
   <main class="viewport-stage" id="menu-view">
+    <!-- Value Proposition Masthead -->
     <header class="y2k-masthead">
       <div class="title-lockup">
         <span class="y2k-halo-star">✦</span>
         <h1 class="y2k-chrome-title" data-text="ART OF DRAKE">ART OF DRAKE</h1>
         <span class="y2k-halo-star">★</span>
         <span class="diary-sticker-note">vol. 01 '99–'04</span>
+      </div>
+
+      <!-- 1-Line System-Style Subtitle -->
+      <div class="masthead-system-subtitle" aria-label="System Identity Subtitle">
+        <span class="sys-chip">SYS_CORE v4.2</span>
+        <span class="sys-separator">//</span>
+        <span class="sys-role">✦ FULL-STACK DEVELOPER // SPECIALIZING IN MODERN WEB PLATFORMS &amp; UI/UX</span>
       </div>
     </header>
 
@@ -280,6 +292,7 @@
     </section>
   </main>
 
+  <!-- Editorial Chapter Dossier Container -->
   <section class="reader-dossier" id="reader-view" aria-hidden="true">
     <div class="reader-dynamic-backdrop" id="reader-bg-layer" aria-hidden="true">
       <div class="backdrop-image-layer" id="backdrop-img-target"></div>
