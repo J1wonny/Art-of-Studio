@@ -1,6 +1,13 @@
+/**
+ * ART OF DRAKE // SYSTEM CORE v4.2
+ * Refactored & Optimized Architecture
+ * Restored: Original "About Me" & "Skills" Student Details
+ */
+
 let activeChapter = null;
 let sfxEnabled = true;
 
+/* ================= 1. PROCEDURAL AUDIO SFX SYNTHESIZER ================= */
 const AudioSFX = {
   ctx: null,
 
@@ -64,23 +71,23 @@ const AudioSFX = {
 
 /* ================= 2. 60 FPS TELEMETRY COUNTER ================= */
 const fpsCounter = document.getElementById('fps-counter');
-let lastFrameTime = performance.now();
-let frameCount = 0;
+let lastFpsTime = performance.now();
+let fpsFrameCount = 0;
 
 function updateRealFPS() {
   const now = performance.now();
-  frameCount++;
-  if (now - lastFrameTime >= 1000) {
-    const fps = Math.round((frameCount * 1000) / (now - lastFrameTime));
+  fpsFrameCount++;
+  if (now - lastFpsTime >= 1000) {
+    const fps = Math.round((fpsFrameCount * 1000) / (now - lastFpsTime));
     if (fpsCounter) fpsCounter.textContent = `${fps} FPS ✦ V-SYNC`;
-    frameCount = 0;
-    lastFrameTime = now;
+    fpsFrameCount = 0;
+    lastFpsTime = now;
   }
   requestAnimationFrame(updateRealFPS);
 }
 requestAnimationFrame(updateRealFPS);
 
-/* ================= 3. LOW-OVERHEAD AMBIENT CANVAS ================= */
+/* ================= 3. MOBILE PERFORMANCE & CANVAS SCALING ================= */
 const canvas = document.getElementById('ambient-canvas');
 const ctx = canvas ? canvas.getContext('2d') : null;
 let particles = [];
@@ -88,9 +95,21 @@ let particlesActive = true;
 let matrixEasterEggActive = false;
 let matrixDrops = [];
 
+const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+let isReducedMotion = motionQuery.matches;
+motionQuery.addEventListener('change', (e) => {
+  isReducedMotion = e.matches;
+  reinitParticles();
+});
+
+function isMobileScreen() {
+  return window.innerWidth < 768;
+}
+
 function resizeCanvas() {
   if (!canvas) return;
-  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  // Dynamic scaling: Limit DPR on mobile to conserve GPU fillrate and battery
+  const dpr = isMobileScreen() ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5);
   canvas.width = window.innerWidth * dpr;
   canvas.height = window.innerHeight * dpr;
   if (ctx) ctx.scale(dpr, dpr);
@@ -98,7 +117,10 @@ function resizeCanvas() {
   const columns = Math.floor(window.innerWidth / 22);
   matrixDrops = Array.from({ length: columns }).fill(1);
 }
-window.addEventListener('resize', resizeCanvas);
+window.addEventListener('resize', () => {
+  resizeCanvas();
+  reinitParticles();
+});
 resizeCanvas();
 
 class AmbientParticle {
@@ -132,31 +154,50 @@ class AmbientParticle {
   }
 }
 
-for (let i = 0; i < 24; i++) particles.push(new AmbientParticle());
+function reinitParticles() {
+  particles = [];
+  if (isReducedMotion) return;
+  
+  // Mobile throttle: 8 particles for mobile, 22 for desktop
+  const count = isMobileScreen() ? 8 : 22;
+  for (let i = 0; i < count; i++) {
+    particles.push(new AmbientParticle());
+  }
+}
+reinitParticles();
 
-function animateAtmosphere() {
-  if (particlesActive && ctx && canvas) {
-    if (matrixEasterEggActive) {
-      ctx.fillStyle = 'rgba(7, 8, 11, 0.18)';
-      ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-      const isGold = document.body.classList.contains('gold-overclock');
-      ctx.fillStyle = isGold ? '#ffd700' : '#2eed9e';
-      ctx.font = '14px "VT323", monospace';
+let lastCanvasFrame = 0;
+function animateAtmosphere(timestamp) {
+  // Mobile framerate throttling: limit canvas redraws to ~30 FPS on mobile to reserve 60fps for UI scrolling
+  const targetInterval = isMobileScreen() ? 33 : 16;
+  const elapsed = timestamp - lastCanvasFrame;
 
-      const chars = '01DRAKEヲアイウエオカキサシスセソタチツテ';
-      for (let i = 0; i < matrixDrops.length; i++) {
-        const text = chars[Math.floor(Math.random() * chars.length)];
-        ctx.fillText(text, i * 22, matrixDrops[i] * 20);
-        if (matrixDrops[i] * 20 > window.innerHeight && Math.random() > 0.98) {
-          matrixDrops[i] = 0;
+  if (elapsed >= targetInterval) {
+    lastCanvasFrame = timestamp - (elapsed % targetInterval);
+
+    if (particlesActive && ctx && canvas && !isReducedMotion) {
+      if (matrixEasterEggActive) {
+        ctx.fillStyle = 'rgba(7, 8, 11, 0.18)';
+        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        const isGold = document.body.classList.contains('gold-overclock');
+        ctx.fillStyle = isGold ? '#ffd700' : '#2eed9e';
+        ctx.font = '14px "VT323", monospace';
+
+        const chars = '01DRAKEヲアイウエオカキサシスセソタチツテ';
+        for (let i = 0; i < matrixDrops.length; i++) {
+          const text = chars[Math.floor(Math.random() * chars.length)];
+          ctx.fillText(text, i * 22, matrixDrops[i] * 20);
+          if (matrixDrops[i] * 20 > window.innerHeight && Math.random() > 0.98) {
+            matrixDrops[i] = 0;
+          }
+          matrixDrops[i]++;
         }
-        matrixDrops[i]++;
-      }
-    } else {
-      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-      for (let i = 0; i < particles.length; i++) {
-        particles[i].update();
-        particles[i].draw();
+      } else {
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].update();
+          particles[i].draw();
+        }
       }
     }
   }
@@ -164,12 +205,9 @@ function animateAtmosphere() {
 }
 requestAnimationFrame(animateAtmosphere);
 
-/* ================= 4. LAG-FREE ADAPTIVE HARDWARE CURSOR ================= */
+/* ================= 4. HARDWARE CURSOR ================= */
 const retroCursor = document.getElementById('retro-cursor');
-let mouseX = -100;
-let mouseY = -100;
-let cursorX = -100;
-let cursorY = -100;
+let mouseX = -100, mouseY = -100, cursorX = -100, cursorY = -100;
 let isCursorMoving = false;
 
 window.addEventListener('mousemove', (e) => {
@@ -213,7 +251,7 @@ document.addEventListener('mouseup', () => {
 
 /* ================= 5. HARDWARE-ACCELERATED 3D TILT ================= */
 function apply3DTilt(element, maxAngle = 10) {
-  if (!element) return;
+  if (!element || isMobileScreen() || isReducedMotion) return;
   let ticking = false;
 
   element.addEventListener('mousemove', (e) => {
@@ -242,7 +280,7 @@ function apply3DTilt(element, maxAngle = 10) {
 }
 document.querySelectorAll('.slender-card').forEach(card => apply3DTilt(card, 10));
 
-/* ================= 6. RETRO WALKMAN MZ-99 CORE ================= */
+/* ================= 6. AUDIO WIDGET SAFEGUARDS (SONY MD WALKMAN) ================= */
 const musicMenuBtn = document.getElementById('music-menu-btn');
 const retroPlayer = document.getElementById('retro-player');
 const closePlayerBtn = document.getElementById('close-player-btn');
@@ -289,6 +327,13 @@ let currentTrack = 0;
 let candidatePointer = 0;
 let isSyntheticPlayback = false;
 
+// SAFEGUARD: Enforce muted, paused, and no autoplay on initial mount
+if (audioCore) {
+  audioCore.autoplay = false;
+  audioCore.muted = true;
+  audioCore.pause();
+}
+
 function buildPlaylistUI() {
   if (!playlistList) return;
   playlistList.innerHTML = PLAYLIST.map((trk, i) => `
@@ -316,9 +361,7 @@ function startVirtualSynth(trackIdx) {
 
   const scales = [
     [261.63, 329.63, 392.00, 523.25, 659.25],
-    [220.00, 261.63, 293.66, 329.63, 392.00],
-    [349.23, 392.00, 440.00, 523.25, 587.33],
-    [196.00, 246.94, 293.66, 369.99, 440.00]
+    [220.00, 261.63, 293.66, 329.63, 392.00]
   ];
   const scale = scales[trackIdx % scales.length];
   let step = 0;
@@ -354,7 +397,7 @@ function startVirtualSynth(trackIdx) {
   }, 250);
 
   updateDiscState(true);
-  hwPlayBtn.textContent = '❚❚';
+  if (hwPlayBtn) hwPlayBtn.textContent = '❚❚';
   if (musicIndicator) musicIndicator.classList.add('active');
   startSpectrumVisualizer();
   showToast(`✦ SYNTH FM CHIP: ${PLAYLIST[trackIdx].name}`);
@@ -375,10 +418,11 @@ function renderSpectrumCanvas() {
 
   const isPlaying = (!audioCore.paused && !audioCore.ended) || isSyntheticPlayback;
   if (isPlaying) {
-    for (let i = 0; i < 7; i++) {
+    const bars = isMobileScreen() ? 5 : 7;
+    for (let i = 0; i < bars; i++) {
       const dynamicH = Math.max(3, 4 + Math.sin(Date.now() * 0.012 + i * 1.5) * 8 + (Math.random() * 3));
       eqCtx.fillStyle = '#2eed9e';
-      eqCtx.fillRect(i * 8 + 2, 14 - dynamicH, 5, dynamicH);
+      eqCtx.fillRect(i * 9 + 2, 14 - dynamicH, 6, dynamicH);
     }
     eqAnimId = requestAnimationFrame(renderSpectrumCanvas);
   } else {
@@ -391,7 +435,7 @@ function renderSpectrumCanvas() {
 }
 
 function startSpectrumVisualizer() {
-  if (!eqAnimId) renderSpectrumCanvas();
+  if (!eqAnimId && !isReducedMotion) renderSpectrumCanvas();
 }
 
 function updateDiscState(isPlaying) {
@@ -423,11 +467,9 @@ function loadTrack(index, candidateIdx = 0) {
     row.classList.toggle('active', idx === index);
   });
 }
-
 loadTrack(0);
 
 if (volSlider) {
-  audioCore.volume = parseFloat(volSlider.value);
   volSlider.addEventListener('input', () => {
     audioCore.volume = parseFloat(volSlider.value);
   });
@@ -451,12 +493,7 @@ audioCore.addEventListener('error', () => {
 audioCore.addEventListener('ended', () => {
   currentTrack = (currentTrack + 1) % PLAYLIST.length;
   loadTrack(currentTrack);
-  audioCore.play().then(() => {
-    hwPlayBtn.textContent = '❚❚';
-    if (musicIndicator) musicIndicator.classList.add('active');
-    updateDiscState(true);
-    startSpectrumVisualizer();
-  }).catch(() => startVirtualSynth(currentTrack));
+  executeExplicitPlay();
 });
 
 audioCore.addEventListener('timeupdate', () => {
@@ -479,6 +516,34 @@ if (seekSlider) {
   });
 }
 
+/**
+ * EXPLICIT USER INTERACTION AUDIO UNLOCK HANDLER
+ * Unmutes, resumes WebAudio context, and triggers playback without autoplay warnings.
+ */
+function executeExplicitPlay() {
+  AudioSFX.init();
+  if (AudioSFX.ctx && AudioSFX.ctx.state === 'suspended') {
+    AudioSFX.ctx.resume().catch(() => {});
+  }
+
+  audioCore.muted = false;
+  if (volSlider) audioCore.volume = parseFloat(volSlider.value);
+
+  const playPromise = audioCore.play();
+  if (playPromise !== undefined) {
+    playPromise.then(() => {
+      hwPlayBtn.textContent = '❚❚';
+      if (musicIndicator) musicIndicator.classList.add('active');
+      updateDiscState(true);
+      startSpectrumVisualizer();
+      showToast(`✦ SPINNING: ${PLAYLIST[currentTrack].name}`);
+    }).catch((err) => {
+      console.warn("Media playback restricted, engaging synth fallback:", err);
+      startVirtualSynth(currentTrack);
+    });
+  }
+}
+
 function togglePlay() {
   AudioSFX.playTapeClick();
 
@@ -492,21 +557,7 @@ function togglePlay() {
   }
 
   if (audioCore.paused) {
-    if (volSlider) audioCore.volume = parseFloat(volSlider.value);
-    audioCore.muted = false;
-
-    const playPromise = audioCore.play();
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
-        hwPlayBtn.textContent = '❚❚';
-        if (musicIndicator) musicIndicator.classList.add('active');
-        updateDiscState(true);
-        startSpectrumVisualizer();
-        showToast(`✦ SPINNING: ${PLAYLIST[currentTrack].name}`);
-      }).catch(() => {
-        startVirtualSynth(currentTrack);
-      });
-    }
+    executeExplicitPlay();
   } else {
     audioCore.pause();
     hwPlayBtn.textContent = '▶';
@@ -523,12 +574,7 @@ if (hwPrevBtn) {
     currentTrack = (currentTrack - 1 + PLAYLIST.length) % PLAYLIST.length;
     stopVirtualSynth();
     loadTrack(currentTrack);
-    audioCore.play().then(() => {
-      hwPlayBtn.textContent = '❚❚';
-      if (musicIndicator) musicIndicator.classList.add('active');
-      updateDiscState(true);
-      startSpectrumVisualizer();
-    }).catch(() => startVirtualSynth(currentTrack));
+    executeExplicitPlay();
   });
 }
 
@@ -538,12 +584,7 @@ if (hwNextBtn) {
     currentTrack = (currentTrack + 1) % PLAYLIST.length;
     stopVirtualSynth();
     loadTrack(currentTrack);
-    audioCore.play().then(() => {
-      hwPlayBtn.textContent = '❚❚';
-      if (musicIndicator) musicIndicator.classList.add('active');
-      updateDiscState(true);
-      startSpectrumVisualizer();
-    }).catch(() => startVirtualSynth(currentTrack));
+    executeExplicitPlay();
   });
 }
 
@@ -575,12 +616,7 @@ if (playlistList) {
     AudioSFX.playTapeClick();
     stopVirtualSynth();
     loadTrack(index);
-    audioCore.play().then(() => {
-      hwPlayBtn.textContent = '❚❚';
-      if (musicIndicator) musicIndicator.classList.add('active');
-      updateDiscState(true);
-      startSpectrumVisualizer();
-    }).catch(() => startVirtualSynth(index));
+    executeExplicitPlay();
   });
 }
 
@@ -601,7 +637,7 @@ if (closePlayerBtn) {
   });
 }
 
-/* ================= 7. PROJECTS DATABASE ================= */
+/* ================= 7. ENHANCED PROJECTS DATABASE (3-PART SPEC) ================= */
 const PROJECTS_DATABASE = [
   {
     id: "proj-1",
@@ -610,9 +646,11 @@ const PROJECTS_DATABASE = [
     thumb: "assets/CYBERDEBUG.gif",
     fallback: "CYBERDEBUG.gif",
     desc: "Cyber Debug is an educational coding game where players learn HTML, CSS, and JavaScript by solving quizzes, fixing errors, and using interactive coding challenges.",
+    missionBrief: "Provides an interactive gamified cyberdeck environment where students reinforce core HTML, CSS, and JS debugging fundamentals with instant live-editor feedback.",
     metrics: { fps: "60 FPS", size: "38 KB", perf: "< 1.2ms QUERY" },
     tech: ["UI", "JS", "HTML", "CSS"],
     liveUrl: "https://cyberdebug2077.netlify.app/",
+    repoUrl: "https://github.com/artofdrake/cyberdebug2077",
     challenge: "Creating engaging interactive challenges while managing DOM updates efficiently.",
     architecture: "Lightweight vanilla JavaScript state machine with dynamic feedback loops."
   },
@@ -623,14 +661,17 @@ const PROJECTS_DATABASE = [
     thumb: "assets/DREAMCORE.gif",
     fallback: "DREAMCORE.gif",
     desc: "A dreamcore-inspired digital space exploring liminal memories, surreal environments, and nostalgic distortion.",
+    missionBrief: "Explores psychological ambience and nostalgic digital distortion using interactive CSS 3D depth stages, scanline filters, and ambient atmospheric audio.",
     metrics: { fps: "60 FPS", size: "38 KB", perf: "< 1.2ms QUERY" },
     tech: ["UI", "JS", "HTML", "CSS"],
     liveUrl: "https://theliminalspace.vercel.app/",
+    repoUrl: "https://github.com/artofdrake/the-liminal-space",
     challenge: "Balancing aesthetic filters and scanlines with smooth scrolling performance.",
     architecture: "CSS 3D perspective layers combined with hardware-accelerated ambient animations."
   }
 ];
 
+/* ================= 8. CHAPTER CONTENT ENGINE ================= */
 const CODEX_DATA = {
   about: {
     num: "TRACK 01",
@@ -675,8 +716,8 @@ const CODEX_DATA = {
                 <a href="assets/resume.pdf" target="_blank" rel="noopener noreferrer" class="sunakku-cta-btn" style="background:#ff477e;">
                   📄 View Resume [PDF]
                 </a>
-                <button class="sunakku-cta-btn" onclick="copyToClipboard('artof.lab.studio@gmail.com')">✉ Say Hello</button>
-                <button class="profile-sub-btn" onclick="copyToClipboard('artof.lab.studio@gmail.com')">Copy Email</button>
+                <button class="sunakku-cta-btn" onclick="copyBufferInteraction(this, 'artof.lab.studio@gmail.com')">✉ Say Hello</button>
+                <button class="profile-sub-btn" onclick="copyBufferInteraction(this, 'artof.lab.studio@gmail.com')">Copy Email</button>
               </div>
             </div>
 
@@ -707,7 +748,7 @@ const CODEX_DATA = {
               <a href="assets/resume.pdf" target="_blank" rel="noopener noreferrer" class="sunakku-cta-btn">
                 📄 curriculum vitae [pdf]
               </a>
-              <button class="sunakku-cta-btn" style="background:transparent; border:1px solid var(--current-accent); color:var(--current-accent);" onclick="copyToClipboard('hello@drakeportfolio.dev')">
+              <button class="sunakku-cta-btn" style="background:transparent; border:1px solid var(--current-accent); color:var(--current-accent);" onclick="copyBufferInteraction(this, 'hello@drakeportfolio.dev')">
                 say hello ✉
               </button>
             </div>
@@ -1058,13 +1099,14 @@ const CODEX_DATA = {
     next: "contact"
   },
 
+  /* ================= 5. CONTACT & COMM-LINK (WITH RETRO CLIPBOARD BUFFER) ================= */
   contact: {
     num: "TRACK 05",
     title: "Comm-Link",
     category: "Direct Transmission",
     accent: "#38bdf8",
     coverImg: "assets/ABOUT ME - COVER.png",
-    fallbackCover: "https://images.unsplash.com/photo-1544816155-1200x800",
+    fallbackCover: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=1200&q=80",
     render() {
       return `
       <div class="fb-discord-cover">
@@ -1074,7 +1116,9 @@ const CODEX_DATA = {
         <div class="cover-top-controls">
           <div class="cover-pill-tabs">
             <button class="cover-tab-btn active">comm-link</button>
-            <button class="cover-tab-btn" onclick="copyToClipboard('hello@drakeportfolio.dev')">copy email</button>
+            <button class="cover-tab-btn copy-buffer-btn" onclick="copyBufferInteraction(this, 'hello@drakeportfolio.dev')">
+              <span>📋</span> <span class="btn-label">[ COPY EMAIL ]</span>
+            </button>
           </div>
           <div class="cover-tag-callout">
             <span>FREQ: 144.39 MHz ACTIVE</span>
@@ -1087,7 +1131,7 @@ const CODEX_DATA = {
         </div>
       </div>
 
-      <div class="contact-platforms-grid" style="margin-top: 10px; grid-template-columns: repeat(3, 1fr);">
+      <div class="contact-platforms-grid" style="margin-top: 10px;">
         <a href="https://facebook.com/share/1GhzeRRh3H" target="_blank" rel="noopener noreferrer" class="social-card-btn">
           <div class="social-icon-box">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -1108,13 +1152,14 @@ const CODEX_DATA = {
           </div>
         </a>
 
-        <div class="social-card-btn" onclick="copyToClipboard('hello@drakeportfolio.dev')">
+        <!-- Interactive Direct Copy Card -->
+        <div class="social-card-btn copy-buffer-btn" onclick="copyBufferInteraction(this, 'hello@drakeportfolio.dev')">
           <div class="social-icon-box">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
           </div>
           <div class="social-info">
-            <span class="social-name">Email</span>
-            <span class="social-handle">drakeportfolio.dev</span>
+            <span class="social-name btn-label">[ COPY EMAIL ]</span>
+            <span class="social-handle">hello@drakeportfolio.dev</span>
           </div>
         </div>
       </div>
@@ -1252,12 +1297,7 @@ window.selectTrackFromConsole = function(index) {
   AudioSFX.playTapeClick();
   stopVirtualSynth();
   loadTrack(index);
-  audioCore.play().then(() => {
-    hwPlayBtn.textContent = '❚❚';
-    if (musicIndicator) musicIndicator.classList.add('active');
-    updateDiscState(true);
-    startSpectrumVisualizer();
-  }).catch(() => startVirtualSynth(index));
+  executeExplicitPlay();
 };
 
 window.openWalkmanDrawer = function() {
@@ -1326,7 +1366,7 @@ window.filterSkills = function(domain, btnElement) {
   });
 };
 
-/* ================= 10. DOM REFERENCES & MODALS ================= */
+/* ================= 10. ENHANCED PROJECT MODAL (3-PART SPEC) ================= */
 const rack = document.getElementById('slender-rack');
 const cards = document.querySelectorAll('.slender-card');
 const menuView = document.getElementById('menu-view');
@@ -1385,6 +1425,105 @@ if (retroModal) {
   });
 }
 
+window.openProjectModal = function(index) {
+  const proj = PROJECTS_DATABASE[index];
+  if (!proj) return;
+  AudioSFX.playTapeClick();
+
+  modalTitle.textContent = `SPECIFICATION INSPECTOR // ${proj.name.toUpperCase()}`;
+  modalBody.innerHTML = `
+    <!-- Top Visual Asset -->
+    <div style="width:100%; height:190px; border-radius:6px; overflow:hidden; border:1px solid var(--glass-border); background:#000;">
+      <img src="${proj.thumb}" alt="${proj.name}" onerror="this.src='${proj.fallback}'" style="width:100%; height:100%; object-fit:cover;" />
+    </div>
+
+    <!-- PART 1: SYSTEM SPECS -->
+    <div class="case-block-section">
+      <div class="case-block-title">
+        <span>⚙</span> PART 1 // SYSTEM SPECS & ARCHITECTURE
+      </div>
+      <div class="tech-spec-rack">
+        ${proj.tech.map(t => `<span class="tech-spec-pill highlight">${t}</span>`).join('')}
+      </div>
+      <div class="case-metrics-grid">
+        <div class="case-metric-pod">
+          <span class="case-metric-val">${proj.metrics.fps}</span>
+          <span class="case-metric-lbl">FRAME RATE</span>
+        </div>
+        <div class="case-metric-pod">
+          <span class="case-metric-val">${proj.metrics.size}</span>
+          <span class="case-metric-lbl">BUNDLE FOOTPRINT</span>
+        </div>
+        <div class="case-metric-pod">
+          <span class="case-metric-val">${proj.metrics.perf}</span>
+          <span class="case-metric-lbl">LATENCY BUDGET</span>
+        </div>
+      </div>
+      <p style="font-size:0.78rem; line-height:1.5; color:var(--text-silver); margin-top:2px;">
+        <strong style="color:var(--text-pure);">Architecture:</strong> ${proj.architecture}
+      </p>
+    </div>
+
+    <!-- PART 2: MISSION BRIEF -->
+    <div class="case-block-section">
+      <div class="case-block-title">
+        <span>🎯</span> PART 2 // MISSION BRIEF & OBJECTIVES
+      </div>
+      <p style="font-size:0.83rem; line-height:1.55; color:var(--text-silver); font-weight:500;">
+        ${proj.missionBrief}
+      </p>
+      <p style="font-size:0.77rem; line-height:1.5; color:var(--text-muted);">
+        <strong style="color:var(--current-accent);">Core Challenge Solved:</strong> ${proj.challenge}
+      </p>
+    </div>
+
+    <!-- PART 3: EXTERNAL LINKS (HIGH-CONTRAST RETRO BUTTONS) -->
+    <div class="modal-actions-rack">
+      <a href="${proj.liveUrl}" target="_blank" rel="noopener noreferrer" class="retro-link-btn btn-demo">
+        <span>↗</span> [ LIVE DEMO ]
+      </a>
+      <a href="${proj.repoUrl}" target="_blank" rel="noopener noreferrer" class="retro-link-btn btn-repo">
+        <span>⌨</span> [ GITHUB REPO ]
+      </a>
+    </div>
+  `;
+  
+  openRetroModal();
+  if (modalBody) modalBody.scrollTop = 0;
+};
+
+window.openPhotoLightbox = function(src, title, camera, film, location) {
+  AudioSFX.playTapeClick();
+  modalTitle.textContent = `OPTICAL INSPECTOR // ${title.toUpperCase()}`;
+  modalBody.innerHTML = `
+    <div style="width:100%; max-height:360px; border-radius:6px; overflow:hidden; border:1px solid var(--glass-border); background:#000;">
+      <img src="${src}" alt="${title}" style="width:100%; height:100%; object-fit:contain;" />
+    </div>
+    <div style="background:var(--panel-glass-solid); border:1px solid var(--glass-border); padding:12px 16px; border-radius:6px; font-family:'Space Mono',monospace; font-size:0.7rem; color:var(--text-silver); display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+      <div><span style="color:var(--text-muted)">DEVICE:</span> ${camera}</div>
+      <div><span style="color:var(--text-muted)">MEDIA:</span> ${film}</div>
+      <div><span style="color:var(--text-muted)">LOCATION:</span> ${location}</div>
+      <div><span style="color:var(--text-muted)">STATUS:</span> ARCHIVED</div>
+    </div>
+  `;
+  openRetroModal();
+  if (modalBody) modalBody.scrollTop = 0;
+};
+
+window.openRomInspector = function(title, description) {
+  AudioSFX.playTapeClick();
+  modalTitle.textContent = `ARCHIVE INSPECTOR // ${title.toUpperCase()}`;
+  modalBody.innerHTML = `
+    <p style="margin-bottom:10px; font-size:0.85rem; line-height:1.6;">${description}</p>
+    <div style="background:var(--panel-glass-solid); border:1px solid var(--glass-border); padding:12px; border-radius:4px; font-family:'Space Mono',monospace; font-size:0.7rem; color:var(--current-accent); display:flex; flex-direction:column; gap:4px;">
+      <span>STATUS: ARCHIVED BUILD</span>
+      <span>SYSTEM: VANILLA STACK</span>
+      <span>READY FOR INSPECTION</span>
+    </div>
+  `;
+  openRetroModal();
+};
+
 /* ================= 11. WORLD CLOCKS & REC TIMERS ================= */
 let recSeconds = 1452;
 const timeFormatters = {
@@ -1425,7 +1564,7 @@ function updateWorldClocks() {
   if (cNY) cNY.textContent = timeFormatters.ny.format(now);
 }
 
-/* ================= 12. HUD & THEME SWITCHERS ================= */
+/* ================= 12. HUD TOGGLES & THEME SWITCHERS ================= */
 function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('portfolio-theme', theme);
@@ -1509,12 +1648,28 @@ function showToast(message) {
   setTimeout(() => { toast.classList.remove('show'); }, 2500);
 }
 
-function copyToClipboard(text) {
+/* ================= 13. RETRO CLIPBOARD BUFFER MICRO-INTERACTION ================= */
+window.copyBufferInteraction = function(triggerEl, text) {
+  if (!triggerEl) return;
+  
   navigator.clipboard.writeText(text).then(() => {
-    AudioSFX.playBlip(1020, 'sine', 0.08);
-    showToast(`✦ COPIED: ${text}`);
-  }).catch(() => showToast(`✦ ${text}`));
-}
+    AudioSFX.playBlip(1040, 'sine', 0.08);
+    showToast(`✦ COPIED TO BUFFER: ${text}`);
+
+    const labelSpan = triggerEl.querySelector('.btn-label') || triggerEl;
+    const originalText = labelSpan.textContent;
+
+    labelSpan.textContent = "[ COPIED TO BUFFER ✦ ]";
+    triggerEl.classList.add('copied-state');
+
+    setTimeout(() => {
+      labelSpan.textContent = originalText;
+      triggerEl.classList.remove('copied-state');
+    }, 2000);
+  }).catch(() => {
+    showToast(`✦ BUFFER WRITE: ${text}`);
+  });
+};
 
 function triggerCrtTransition(callback) {
   AudioSFX.playTapeClick();
@@ -1526,7 +1681,7 @@ function triggerCrtTransition(callback) {
   }, 140);
 }
 
-/* ================= 13. CHAPTER NAVIGATION ================= */
+/* ================= 14. CHAPTER NAVIGATION ================= */
 function openChapter(key) {
   const data = CODEX_DATA[key];
   if (!data) return;
@@ -1582,7 +1737,7 @@ function closeReader() {
     }
     if (menuView) menuView.classList.remove('dismissed');
     particlesActive = true;
-    document.title = "ART OF DRAKE ★ // CYBER CODEX";
+    document.title = "ART OF STUDIO ★ // SYSTEM CORE v4.2";
     activeChapter = null;
     history.pushState(null, '', window.location.pathname);
   });
@@ -1600,7 +1755,7 @@ if (nextBtn) {
   });
 }
 
-/* ================= 14. CARD SELECTION LISTENERS ================= */
+/* ================= 15. CARD LISTENERS & CAROUSEL ================= */
 cards.forEach(card => {
   card.addEventListener('mouseenter', () => {
     if (rack) rack.classList.add('has-hover');
@@ -1627,7 +1782,6 @@ cards.forEach(card => {
   });
 });
 
-/* ================= 15. CAROUSEL & MODAL ACTIONS ================= */
 window.scrollProjectCarousel = function(dir) {
   const track = document.getElementById('projects-track');
   if (!track) return;
@@ -1636,96 +1790,7 @@ window.scrollProjectCarousel = function(dir) {
   track.scrollBy({ left: amount, behavior: 'smooth' });
 };
 
-window.openProjectModal = function(index) {
-  const proj = PROJECTS_DATABASE[index];
-  if (!proj) return;
-  AudioSFX.playTapeClick();
-
-  modalTitle.textContent = `PROJECT DETAILS // ${proj.name.toUpperCase()}`;
-  modalBody.innerHTML = `
-    <div style="width:100%; height:200px; border-radius:6px; overflow:hidden; border:1px solid var(--glass-border); background:#000;">
-      <img src="${proj.thumb}" alt="${proj.name}" onerror="this.src='${proj.fallback}'" style="width:100%; height:100%; object-fit:cover;" />
-    </div>
-
-    <div class="case-metrics-grid">
-      <div class="case-metric-pod">
-        <span class="case-metric-val">${proj.metrics.fps}</span>
-        <span class="case-metric-lbl">FRAME RATE</span>
-      </div>
-      <div class="case-metric-pod">
-        <span class="case-metric-val">${proj.metrics.size}</span>
-        <span class="case-metric-lbl">ASSET SIZE</span>
-      </div>
-      <div class="case-metric-pod">
-        <span class="case-metric-val">${proj.metrics.perf}</span>
-        <span class="case-metric-lbl">RESPONSE</span>
-      </div>
-    </div>
-
-    <div>
-      <h3 style="font-family:'Righteous',sans-serif; font-size:1.2rem; color:var(--text-pure); margin-bottom:4px;">${proj.name}</h3>
-      <p style="font-size:0.84rem; line-height:1.6; color:var(--text-silver);">${proj.desc}</p>
-    </div>
-
-    <div>
-      <div class="case-section-lbl">✦ WHAT I LEARNED:</div>
-      <p style="font-size:0.8rem; line-height:1.55; color:var(--text-muted);">${proj.challenge}</p>
-    </div>
-
-    <div>
-      <div class="case-section-lbl">✦ TECH & APPROACH:</div>
-      <p style="font-size:0.8rem; line-height:1.55; color:var(--text-muted);">${proj.architecture}</p>
-    </div>
-
-    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
-      ${proj.tech.map(t => `<span style="background:var(--panel-glass); border:1px solid var(--glass-border); padding:3px 10px; border-radius:999px; font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--current-accent);">${t}</span>`).join('')}
-    </div>
-
-    <!-- CLEAN DEMO BUTTON (REPO BUTTON REMOVED) -->
-    <div style="display:flex; gap:10px; margin-top:8px;">
-      <a href="${proj.liveUrl}" target="_blank" rel="noopener noreferrer" class="sunakku-cta-btn">
-        ↗ LAUNCH DEMO
-      </a>
-    </div>
-  `;
-  
-  openRetroModal();
-  if (modalBody) modalBody.scrollTop = 0;
-};
-
-window.openPhotoLightbox = function(src, title, camera, film, location) {
-  AudioSFX.playTapeClick();
-  modalTitle.textContent = `OPTICAL INSPECTOR // ${title.toUpperCase()}`;
-  modalBody.innerHTML = `
-    <div style="width:100%; max-height:360px; border-radius:6px; overflow:hidden; border:1px solid var(--glass-border); background:#000;">
-      <img src="${src}" alt="${title}" style="width:100%; height:100%; object-fit:contain;" />
-    </div>
-    <div style="background:var(--panel-glass-solid); border:1px solid var(--glass-border); padding:12px 16px; border-radius:6px; font-family:'Space Mono',monospace; font-size:0.7rem; color:var(--text-silver); display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-      <div><span style="color:var(--text-muted)">DEVICE:</span> ${camera}</div>
-      <div><span style="color:var(--text-muted)">MEDIA:</span> ${film}</div>
-      <div><span style="color:var(--text-muted)">LOCATION:</span> ${location}</div>
-      <div><span style="color:var(--text-muted)">STATUS:</span> ARCHIVED</div>
-    </div>
-  `;
-  openRetroModal();
-  if (modalBody) modalBody.scrollTop = 0;
-};
-
-window.openRomInspector = function(title, description) {
-  AudioSFX.playTapeClick();
-  modalTitle.textContent = `ARCHIVE INSPECTOR // ${title.toUpperCase()}`;
-  modalBody.innerHTML = `
-    <p style="margin-bottom:10px; font-size:0.85rem; line-height:1.6;">${description}</p>
-    <div style="background:var(--panel-glass-solid); border:1px solid var(--glass-border); padding:12px; border-radius:4px; font-family:'Space Mono',monospace; font-size:0.7rem; color:var(--current-accent); display:flex; flex-direction:column; gap:4px;">
-      <span>STATUS: ARCHIVED BUILD</span>
-      <span>SYSTEM: VANILLA STACK</span>
-      <span>READY FOR INSPECTION</span>
-    </div>
-  `;
-  openRetroModal();
-};
-
-/* ================= 16. SKILLS RADAR ================= */
+/* ================= 16. SKILLS RADAR TELEMETRY ================= */
 function initRadarChart() {
   const radarCanvas = document.getElementById('skills-radar-canvas');
   const tooltip = document.getElementById('radar-diag-tooltip');
@@ -1814,228 +1879,124 @@ function initRadarChart() {
   };
 }
 
-/* ================= 17. CONTACT & INTERACTIVE TERMINAL ================= */
-/* ================= 17. CONTACT & INTERACTIVE TERMINAL ================= */
-
+/* ================= 17. CONTACT FORM & INTERACTIVE TERMINAL ================= */
 window.sendDispatch = async function() {
-
   const name = document.getElementById('disp-name');
   const email = document.getElementById('disp-email');
   const msg = document.getElementById('disp-msg');
 
   if (!name.value.trim() || !email.value.trim() || !msg.value.trim()) {
-
     showToast('✦ PLEASE COMPLETE ALL FIELDS');
     AudioSFX.playBlip(400, 'sine', 0.05);
-
     return;
   }
 
   AudioSFX.playTapeClick();
-
   const formData = new FormData();
-
   formData.append('name', name.value.trim());
   formData.append('email', email.value.trim());
   formData.append('message', msg.value.trim());
 
   try {
-
     const response = await fetch('https://formspree.io/f/mvkoldrn', {
       method: 'POST',
       body: formData,
-      headers: {
-        'Accept': 'application/json'
-      }
+      headers: { 'Accept': 'application/json' }
     });
 
     if (response.ok) {
-
-      showToast(
-        `✦ TRANSMISSION SENT! THANK YOU, ${name.value.toUpperCase()}`
-      );
-
+      showToast(`✦ TRANSMISSION SENT! THANK YOU, ${name.value.toUpperCase()}`);
       name.value = '';
       email.value = '';
       msg.value = '';
-
       AudioSFX.playBlip(900, 'sine', 0.08);
-
     } else {
-
       showToast('✦ TRANSMISSION FAILED — TRY AGAIN');
       AudioSFX.playBlip(300, 'sine', 0.08);
-
     }
-
   } catch (error) {
-
-    console.error('Formspree error:', error);
-
     showToast('✦ CONNECTION ERROR — TRY AGAIN');
     AudioSFX.playBlip(300, 'sine', 0.08);
-
   }
-
 };
 
-
 function initTerminal() {
-
   const input = document.getElementById('terminal-input');
-
   const history = document.getElementById('terminal-history');
-
-  if (!input || !history) return;
-
-  if (input.dataset.terminalBound === "true") return;
+  if (!input || !history || input.dataset.terminalBound === "true") return;
 
   input.dataset.terminalBound = "true";
-
   input.addEventListener('keydown', (e) => {
-
     if (e.key === 'Enter') {
-
       const rawCmd = input.value.trim();
-
       const command = rawCmd.toLowerCase();
-
       if (!command) return;
 
       AudioSFX.playBlip(750, 'triangle', 0.03);
-
       const userLine = document.createElement('div');
-
       userLine.className = 'terminal-line';
-
       userLine.textContent = `operator@drake:~$ ${rawCmd}`;
-
       history.appendChild(userLine);
 
       const responseLine = document.createElement('div');
-
       responseLine.className = 'terminal-line output-accent';
 
-
       if (command === 'help') {
-
-        responseLine.innerHTML =
-          "COMMAND MATRIX:\n • help       - Display directives\n • specs      - Terminal system info\n • resume     - Resume summary\n • email      - Direct email relay\n • matrix     - Digital rain toggle\n • konami     - 24K Gold theme override\n • eject      - Eject Walkman tray\n • play [1-6] - Play track\n • pause      - Pause playback\n • clear      - Clear terminal screen";
-
-      }
-      else if (command === 'specs' || command === 'neofetch') {
-
+        responseLine.innerHTML = "COMMAND MATRIX:\n • help       - Display directives\n • specs      - Terminal system info\n • resume     - Resume summary\n • email      - Direct email relay\n • matrix     - Digital rain toggle\n • konami     - 24K Gold theme override\n • eject      - Eject Walkman tray\n • play [1-2] - Play track\n • pause      - Pause playback\n • clear      - Clear terminal screen";
+      } else if (command === 'specs' || command === 'neofetch') {
         responseLine.textContent = `
-
     ___   ___  ___  _  __ ___ 
    / _ \\ / _ \\/ _ || |/ // _/
   / // // // // __ ||   // _/  
  /____//_/|_//_/ |_||_|\\_\\___/  
  -----------------------------
-
  USER: Drake [BSIT Year 2]
-
  OS: Cyber Codex v4.2
-
  STACK: HTML5 / CSS3 / JavaScript / Java / SQLite
-
  FOCUS: Web Design & Front-End Development
-
  AUDIO: ATRAC Engine / WebAudio API`;
-      }
-
-      else if (command === 'resume' || command === 'cat resume') {
-        responseLine.textContent =
-          `[DRAKE // 2ND YEAR BSIT STUDENT]\n• Front-End & Web Design focus\n• HTML5, CSS3, JavaScript, Java, SQLite\n• PDF CV: Click 'RESUME.PDF' in top HUD`;
-
-      }
-      else if (command === 'email') {
-        responseLine.textContent =
-          "DIRECT FREQUENCY: hello@drakeportfolio.dev";
-      }
-
-      else if (command === 'matrix') {
+      } else if (command === 'resume' || command === 'cat resume') {
+        responseLine.textContent = `[DRAKE // 2ND YEAR BSIT STUDENT]\n• Front-End & Web Design focus\n• HTML5, CSS3, JavaScript, Java, SQLite\n• PDF CV: Click 'RESUME.PDF' in top HUD`;
+      } else if (command === 'email') {
+        responseLine.textContent = "DIRECT FREQUENCY: hello@drakeportfolio.dev";
+      } else if (command === 'matrix') {
         matrixEasterEggActive = true;
         particlesActive = true;
-        responseLine.textContent =
-          "✦ ENGAGING DIGITAL RAIN ON AMBIENT CANVAS (10s)...";
-        setTimeout(() => {
-          matrixEasterEggActive = false;
-        }, 10000);
-      }
-
-      else if (
-        command === 'konami' ||
-        command === 'hack' ||
-        command === 'secret'
-      ) {
+        responseLine.textContent = "✦ ENGAGING DIGITAL RAIN ON AMBIENT CANVAS (10s)...";
+        setTimeout(() => { matrixEasterEggActive = false; }, 10000);
+      } else if (command === 'konami' || command === 'hack' || command === 'secret') {
         activateGoldOverclock();
-        responseLine.textContent =
-          "★ OVERCLOCK VERIFIED: 24K GOLD THEME UNLOCKED!";
-
-      }
-
-      else if (command === 'eject') {
+        responseLine.textContent = "★ OVERCLOCK VERIFIED: 24K GOLD THEME UNLOCKED!";
+      } else if (command === 'eject') {
         if (hwEjectBtn) hwEjectBtn.click();
-        responseLine.textContent =
-          "✦ MINIDISC TRAY EJECTED";
-
-      }
-
-      else if (command.startsWith('play')) {
+        responseLine.textContent = "✦ MINIDISC TRAY EJECTED";
+      } else if (command.startsWith('play')) {
         const parts = command.split(' ');
-        const idx = parts[1]
-          ? parseInt(parts[1], 10) - 1
-          : 0;
-
-        if (
-          !isNaN(idx) &&
-          idx >= 0 &&
-          idx < PLAYLIST.length
-        ) {
-
+        const idx = parts[1] ? parseInt(parts[1], 10) - 1 : 0;
+        if (!isNaN(idx) && idx >= 0 && idx < PLAYLIST.length) {
           loadTrack(idx);
           stopVirtualSynth();
-          audioCore.play().then(() => {
-            hwPlayBtn.textContent = '❚❚';
-            if (musicIndicator) {
-              musicIndicator.classList.add('active');
-            }
-
-            updateDiscState(true);
-            startSpectrumVisualizer();
-          }).catch(() => startVirtualSynth(idx));
-
-          responseLine.textContent =
-            `✦ ENGAGING TRACK 0${idx + 1}: ${PLAYLIST[idx].name}`;
+          executeExplicitPlay();
+          responseLine.textContent = `✦ ENGAGING TRACK 0${idx + 1}: ${PLAYLIST[idx].name}`;
         } else {
-          responseLine.textContent =
-            "✦ USAGE: play [1-6]";
-
+          responseLine.textContent = "✦ USAGE: play [1-2]";
         }
-      }
-
-      else if (command === 'pause') {
+      } else if (command === 'pause') {
         audioCore.pause();
         stopVirtualSynth();
         hwPlayBtn.textContent = '▶';
-        if (musicIndicator) {
-          musicIndicator.classList.remove('active');
-        }
+        if (musicIndicator) musicIndicator.classList.remove('active');
         updateDiscState(false);
         renderSpectrumCanvas();
-        responseLine.textContent =
-          "✦ WALKMAN PLAYBACK PAUSED";
-      }
-      else if (command === 'clear') {
+        responseLine.textContent = "✦ WALKMAN PLAYBACK PAUSED";
+      } else if (command === 'clear') {
         history.innerHTML = "";
         input.value = "";
         return;
+      } else {
+        responseLine.textContent = `COMMAND NOT RECOGNIZED: '${rawCmd}'. Type 'help' for directives.`;
       }
-      else {
-        responseLine.textContent =
-          `COMMAND NOT RECOGNIZED: '${rawCmd}'. Type 'help' for directives.`;
-      }
+
       history.appendChild(responseLine);
       history.scrollTop = history.scrollHeight;
       input.value = "";
@@ -2043,7 +2004,7 @@ function initTerminal() {
   });
 }
 
-/* ================= 18. KONAMI CODE & ESC CONFLICT FIX ================= */
+/* ================= 18. SHORTCUTS & KONAMI CODE ================= */
 const konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
 let konamiIndex = 0;
 
@@ -2104,7 +2065,7 @@ window.addEventListener('touchstart', (e) => {
 window.addEventListener('touchend', (e) => {
   const touchEndX = e.changedTouches[0].screenX;
   const diffX = touchEndX - touchStartX;
-  if (e.target.closest('.projects-horizontal-track, .contact-platforms-grid, .retro-audio-pod')) return;
+  if (e.target.closest('.projects-horizontal-track, .contact-platforms-grid, .retro-audio-pod, .interactive-terminal')) return;
 
   if (readerView && readerView.classList.contains('active') && Math.abs(diffX) > 65) {
     if (diffX > 0) {
