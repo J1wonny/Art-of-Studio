@@ -1249,7 +1249,7 @@ const CODEX_DATA = {
           </div>
           <div class="social-info">
             <span class="social-name">Instagram</span>
-            <span class="social-handle">@artofstudio</span>
+            <span class="social-handle">@artof.studios</span>
           </div>
         </a>
 
