@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-  <title>ART OF STUDIO ★</title>
+  <title>ART OF STUDIO ★ // COLLECTIVE CODEX</title>
 
-  <meta name="description" content="BSIT Student & Creative Front-End Web Developer Portfolio." />
+  <meta name="description" content="Creative Web Engineering & Digital Design Studio Collective." />
   <meta property="og:title" content="ART OF STUDIO ★" />
-  <meta property="og:description" content="BSIT Student & Creative Front-End Web Developer Portfolio." />
+  <meta property="og:description" content="Creative Web Engineering & Digital Design Studio Collective." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="assets/image7.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="ART OF STUDIO ★" />
-  <meta name="twitter:description" content="BSIT Student & Creative Front-End Web Developer Portfolio." />
+  <meta name="twitter:description" content="Creative Web Engineering & Digital Design Studio Collective." />
   <meta name="twitter:image" content="assets/image7.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,8 +63,8 @@
         <span>📎</span> <span>CREDITS</span>
       </button>
 
-      <a href="assets/resume.pdf" target="_blank" rel="noopener noreferrer" class="osd-pill-btn resume-hud-btn" title="Download Curriculum Vitae (PDF)" aria-label="Download Resume">
-        <span>📄</span> <span>RESUME.PDF</span>
+      <a href="assets/resume.pdf" target="_blank" rel="noopener noreferrer" class="osd-pill-btn resume-hud-btn" title="Download Studio Deck / CV" aria-label="Download Studio Deck">
+        <span>📄</span> <span>DECK.PDF</span>
       </a>
 
       <button class="osd-pill-btn music-trigger-btn" id="music-menu-btn" title="Open Retro Walkman (M)" aria-label="Open Music Player">
@@ -81,7 +81,7 @@
   <!-- Bottom HUD Bar -->
   <aside class="osd-bar osd-bottom">
     <div class="osd-corner osd-bl">
-      <span class="osd-text">ART OF STUDIO // SYSTEM CORE v4.2</span>
+      <span class="osd-text">ART OF STUDIO // COLLECTIVE CORE v4.2</span>
     </div>
     <div class="osd-corner osd-br">
       <span class="osd-text">BSIT DEV CODEX ★ PS-CARD [15/15 BLOCKS]</span>
@@ -159,40 +159,41 @@
       </div>
 
       <div class="player-playlist">
-        <div class="playlist-header">MINIDISC TOC [LOCAL AUDIO RACK]</div>
+        <div class="playlist-header">MINIDISC TOC [STUDIO AUDIO RACK]</div>
         <ul class="playlist-items" id="playlist-list"></ul>
       </div>
     </div>
   </aside>
 
-  <!-- Audio Core (Defaults Strictly to Muted & No Autoplay on Initial Mount) -->
+  <!-- Audio Core -->
   <audio id="local-audio-core" preload="none" muted></audio>
 
+  <!-- VIEWPORT STAGE: MAIN MENU (Unchanged structure) -->
   <main class="viewport-stage" id="menu-view">
     <!-- Value Proposition Masthead -->
     <header class="y2k-masthead">
       <div class="title-lockup">
         <span class="y2k-halo-star">✦</span>
-        <h1 class="y2k-chrome-title" data-text="ART OF DRAKE">ART OF STUDIO</h1>
+        <h1 class="y2k-chrome-title" data-text="ART OF STUDIO">ART OF STUDIO</h1>
         <span class="y2k-halo-star">★</span>
         <span class="diary-sticker-note">vol. 01 '99–'04</span>
       </div>
 
-      <!-- 1-Line System-Style Subtitle -->
+      <!-- System-Style Subtitle -->
       <div class="masthead-system-subtitle" aria-label="System Identity Subtitle">
         <span class="sys-chip">SYS_CORE v4.2</span>
         <span class="sys-separator">//</span>
-        <span class="sys-role">✦ FULL-STACK DEVELOPER // SPECIALIZING IN MODERN WEB PLATFORMS &amp; UI/UX</span>
+        <span class="sys-role">✦ CREATIVE DEV COLLECTIVE // SPECIALIZING IN MODERN WEB PLATFORMS &amp; RETRO UI/UX</span>
       </div>
     </header>
 
-    <!-- The 6-Chapter Rack -->
+    <!-- The 6-Chapter Rack (Main Menu Preserved) -->
     <section class="slender-rack" id="slender-rack" aria-label="Chapter Selection">
-      <!-- Chapter 01 -->
-      <article class="slender-card" data-chapter="about" data-color="ch1" tabindex="0" role="button" aria-label="Chapter 1: About Me">
+      <!-- Chapter 01: About Us -->
+      <article class="slender-card" data-chapter="about" data-color="ch1" tabindex="0" role="button" aria-label="Chapter 1: About Us">
         <div class="card-housing">
           <div class="corner-tape"></div>
-          <img class="card-visual" src="assets/image7.png" alt="About Visual" onerror="this.src='https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=500&q=80'" />
+          <img class="card-visual" src="assets/ABOUT US.jpg" alt="About Us Visual" onerror="this.src='https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=500&q=80'" />
           <div class="hologram-shimmer"></div>
           <div class="card-glare"></div>
           <div class="badge-ribbon">
@@ -200,12 +201,12 @@
           </div>
         </div>
         <div class="card-meta">
-          <h2 class="meta-title">About Me</h2>
-          <span class="meta-tag">diary · status</span>
+          <h2 class="meta-title">About Us</h2>
+          <span class="meta-tag">collective · team</span>
         </div>
       </article>
 
-      <!-- Chapter 02 -->
+      <!-- Chapter 02: Projects -->
       <article class="slender-card" data-chapter="projects" data-color="ch2" tabindex="0" role="button" aria-label="Chapter 2: Projects">
         <div class="card-housing">
           <div class="corner-tape"></div>
@@ -222,7 +223,7 @@
         </div>
       </article>
 
-      <!-- Chapter 03 -->
+      <!-- Chapter 03: Skills -->
       <article class="slender-card" data-chapter="skills" data-color="ch3" tabindex="0" role="button" aria-label="Chapter 3: Skills">
         <div class="card-housing">
           <div class="corner-tape"></div>
@@ -239,7 +240,7 @@
         </div>
       </article>
 
-      <!-- Chapter 04 -->
+      <!-- Chapter 04: Archive -->
       <article class="slender-card" data-chapter="archive" data-color="ch4" tabindex="0" role="button" aria-label="Chapter 4: Archive">
         <div class="card-housing">
           <div class="corner-tape"></div>
@@ -256,7 +257,7 @@
         </div>
       </article>
 
-      <!-- Chapter 05 -->
+      <!-- Chapter 05: Contact -->
       <article class="slender-card" data-chapter="contact" data-color="ch5" tabindex="0" role="button" aria-label="Chapter 5: Contact">
         <div class="card-housing">
           <div class="corner-tape"></div>
@@ -269,11 +270,11 @@
         </div>
         <div class="card-meta">
           <h2 class="meta-title">Contact</h2>
-          <span class="meta-tag">comm-link · terminal</span>
+          <span class="meta-tag">comm-link · dispatch</span>
         </div>
       </article>
 
-      <!-- Chapter 06 -->
+      <!-- Chapter 06: Elsewhere -->
       <article class="slender-card" data-chapter="elsewhere" data-color="ch6" tabindex="0" role="button" aria-label="Chapter 6: Elsewhere">
         <div class="card-housing">
           <div class="corner-tape"></div>
@@ -286,7 +287,7 @@
         </div>
         <div class="card-meta">
           <h2 class="meta-title">Elsewhere</h2>
-          <span class="meta-tag">fm radio · tape deck</span>
+          <span class="meta-tag">fm radio · lounge</span>
         </div>
       </article>
     </section>
@@ -314,7 +315,7 @@
 
         <div class="topbar-callout">
           <span class="live-dot-indicator"></span>
-          <span id="reader-status-tag">ART OF DRAKE // IDENTITY ARCHIVE</span>
+          <span id="reader-status-tag">ART OF STUDIO // COLLECTIVE</span>
         </div>
       </header>
 
@@ -328,7 +329,7 @@
     </div>
   </section>
 
-  <!-- Interactive Case Study / Specification Inspector Modal -->
+  <!-- Interactive Modal -->
   <aside class="retro-modal" id="retro-modal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal-box">
       <div class="modal-top">
