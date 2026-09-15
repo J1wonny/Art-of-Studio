@@ -86,7 +86,7 @@ body.recruiter-mode {
   background-color: #f8fafc !important;
 }
 
-/* ================= RESET & HARDWARE ACCELERATION ================= */
+/* ================= RESET & CORE HARDWARE ACCELERATION ================= */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -119,7 +119,7 @@ html, body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* ================= HARDWARE CURSOR ================= */
+/* ================= RETRO HARDWARE CURSOR ================= */
 @media (hover: hover) and (pointer: fine) {
   body { cursor: none !important; }
   a, button, input, textarea, select, [role="button"] { cursor: none !important; }
@@ -169,7 +169,7 @@ html, body {
   a, button, input, textarea, select, [role="button"] { cursor: pointer !important; }
 }
 
-/* ================= MAIN MENU BACKGROUND ================= */
+/* ================= MAIN BACKGROUND & EFFECTS ================= */
 body {
   background-image: var(--bg-tint-gradient), url('assets/MAIN MENU.jpg');
   background-size: cover;
@@ -409,7 +409,7 @@ body.recruiter-mode .recruiter-mode-btn {
   opacity: 1;
 }
 
-/* ================= RETRO WALKMAN MZ-99 ================= */
+/* ================= RETRO AUDIO POD (WALKMAN) ================= */
 .retro-audio-pod {
   position: fixed;
   top: 65px;
@@ -608,7 +608,7 @@ body.recruiter-mode .recruiter-mode-btn {
 }
 .playlist-item:hover, .playlist-item.active { background: rgba(255, 255, 255, 0.08); color: var(--current-accent); }
 
-/* ================= 1. VALUE PROPOSITION MASTHEAD ================= */
+/* ================= 1. MASTHEAD ================= */
 .viewport-stage {
   width: 100vw;
   min-height: 100vh;
@@ -692,7 +692,6 @@ body.recruiter-mode .recruiter-mode-btn {
   white-space: nowrap;
 }
 
-/* System-Style Retro Terminal Subtitle */
 .masthead-system-subtitle {
   display: inline-flex;
   align-items: center;
@@ -717,20 +716,11 @@ body.recruiter-mode .recruiter-mode-btn {
   box-shadow: 0 0 16px rgba(255, 71, 126, 0.25);
   transform: translateY(-1px);
 }
-.sys-chip {
-  color: var(--current-accent);
-  font-weight: 700;
-}
-.sys-separator {
-  color: var(--text-muted);
-  opacity: 0.6;
-}
-.sys-role {
-  color: var(--text-pure);
-  font-weight: 600;
-}
+.sys-chip { color: var(--current-accent); font-weight: 700; }
+.sys-separator { color: var(--text-muted); opacity: 0.6; }
+.sys-role { color: var(--text-pure); font-weight: 600; }
 
-/* ================= 6-CARD SLENDER MENU ================= */
+/* ================= 6-CARD SLENDER MENU (UNTOUCHED STRUCTURE) ================= */
 .slender-rack {
   width: clamp(660px, 60vw, 980px);
   max-width: 100%;
@@ -998,8 +988,8 @@ body.recruiter-mode .recruiter-mode-btn {
 .fb-discord-cover {
   position: relative;
   width: 100%;
-  height: 290px !important;
-  min-height: 290px !important;
+  height: 270px !important;
+  min-height: 270px !important;
   flex-shrink: 0 !important;
   border-radius: 10px;
   overflow: hidden;
@@ -1026,9 +1016,6 @@ body.recruiter-mode .recruiter-mode-btn {
   inset: 0;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.15) 40%, rgba(7, 8, 11, 0.94) 100%);
   z-index: 2;
-}
-[data-theme="light"] .fb-discord-cover-scrim {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.15) 40%, rgba(243, 239, 232, 0.95) 100%);
 }
 
 .cover-top-controls {
@@ -1101,7 +1088,169 @@ body.recruiter-mode .recruiter-mode-btn {
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85);
 }
 
-/* ================= PROFILE SHELF ================= */
+/* ================= 2. GROUP STUDIO ROSTER & MEMBERS DISPLAY ================= */
+.roster-navigation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: var(--panel-glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 12px 18px;
+}
+.roster-header-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--current-accent);
+  letter-spacing: 1.5px;
+}
+.roster-back-btn {
+  background: rgba(255, 71, 126, 0.15);
+  border: 1px solid var(--current-accent);
+  color: #fff;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.roster-back-btn:hover {
+  background: var(--current-accent);
+  transform: translateX(-3px);
+}
+
+/* Scalable Member Grid */
+.members-roster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+  width: 100%;
+}
+
+.member-operative-card {
+  background: var(--panel-glass);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+}
+.member-operative-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--current-accent);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 71, 126, 0.15);
+}
+
+.member-op-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.member-op-avatar-wrap {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 2px solid var(--glass-border);
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #090c12;
+}
+.member-op-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.member-operative-card:hover .member-op-avatar-img {
+  transform: scale(1.08);
+}
+.member-op-status-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--panel-glass-solid);
+}
+
+.member-op-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+.member-op-callsign {
+  font-family: 'Righteous', sans-serif;
+  font-size: 1.4rem;
+  color: var(--text-pure);
+  letter-spacing: 1px;
+}
+.member-op-role {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--current-accent);
+  font-weight: 700;
+}
+.member-op-uid {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--text-muted);
+}
+
+.member-op-snippet {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text-silver);
+}
+
+.member-op-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.member-op-chip {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.62rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  padding: 3px 8px;
+  border-radius: 4px;
+  color: var(--text-silver);
+}
+
+.member-op-cta-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--subtle-border);
+  padding-top: 12px;
+}
+.member-op-action-lbl {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--current-accent);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ================= 3. SEPARATE OPERATIVE DOSSIER VIEW ================= */
 .profile-full-wrapper {
   display: flex;
   flex-direction: column;
@@ -1204,7 +1353,26 @@ body.recruiter-mode .recruiter-mode-btn {
   font-weight: 700;
 }
 
-/* ================= 2. PROJECT CAROUSEL & MODAL ENHANCEMENTS ================= */
+/* Quick Member Switcher */
+.member-switch-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--panel-glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.member-switch-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ================= 4. PROJECT CAROUSEL & SPECS ================= */
 .carousel-outer-shell { position: relative; width: 100%; }
 .carousel-nav-btn {
   position: absolute;
@@ -1288,7 +1456,7 @@ body.recruiter-mode .recruiter-mode-btn {
   cursor: pointer;
 }
 
-/* 3-Part Modal Enforcements */
+/* Modal Specs */
 .case-block-section {
   display: flex;
   flex-direction: column;
@@ -1309,11 +1477,7 @@ body.recruiter-mode .recruiter-mode-btn {
   gap: 6px;
   text-transform: uppercase;
 }
-.tech-spec-rack {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
+.tech-spec-rack { display: flex; flex-wrap: wrap; gap: 6px; }
 .tech-spec-pill {
   background: var(--panel-glass-solid);
   border: 1px solid var(--glass-border);
@@ -1323,10 +1487,7 @@ body.recruiter-mode .recruiter-mode-btn {
   padding: 4px 10px;
   border-radius: 4px;
 }
-.tech-spec-pill.highlight {
-  color: var(--current-accent);
-  border-color: var(--current-accent);
-}
+.tech-spec-pill.highlight { color: var(--current-accent); border-color: var(--current-accent); }
 
 .modal-actions-rack {
   display: grid;
@@ -1356,23 +1517,15 @@ body.recruiter-mode .recruiter-mode-btn {
   border: 1.5px solid #ffffff;
   box-shadow: 0 0 16px var(--current-accent);
 }
-.retro-link-btn.btn-demo:hover {
-  filter: brightness(1.15);
-  transform: translateY(-2px);
-}
+.retro-link-btn.btn-demo:hover { filter: brightness(1.15); transform: translateY(-2px); }
 .retro-link-btn.btn-repo {
   background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
   border: 1.5px solid var(--glass-border);
 }
-.retro-link-btn.btn-repo:hover {
-  background: #ffffff;
-  color: #050505;
-  border-color: #ffffff;
-  transform: translateY(-2px);
-}
+.retro-link-btn.btn-repo:hover { background: #ffffff; color: #050505; border-color: #ffffff; transform: translateY(-2px); }
 
-/* ================= 5. CONTACT & CLIPBOARD BUFFER MICRO-INTERACTION ================= */
+/* ================= 5. CONTACT & DISPATCH ================= */
 .copy-buffer-btn {
   background: var(--panel-glass);
   border: 1px solid var(--glass-border);
@@ -1388,11 +1541,7 @@ body.recruiter-mode .recruiter-mode-btn {
   gap: 8px;
   transition: border-color 0.25s, background 0.25s, color 0.25s, transform 0.2s;
 }
-.copy-buffer-btn:hover {
-  border-color: var(--current-accent);
-  color: var(--current-accent);
-  transform: translateY(-2px);
-}
+.copy-buffer-btn:hover { border-color: var(--current-accent); color: var(--current-accent); transform: translateY(-2px); }
 .copy-buffer-btn.copied-state {
   background: rgba(46, 237, 158, 0.25) !important;
   border-color: #2eed9e !important;
@@ -1423,11 +1572,7 @@ body.recruiter-mode .recruiter-mode-btn {
   cursor: pointer;
   transition: transform 0.2s, border-color 0.2s, color 0.2s;
 }
-.social-card-btn:hover {
-  border-color: var(--current-accent);
-  transform: translateY(-4px);
-  color: var(--text-pure);
-}
+.social-card-btn:hover { border-color: var(--current-accent); transform: translateY(-4px); color: var(--text-pure); }
 .social-icon-box {
   width: 36px;
   height: 36px;
@@ -1495,7 +1640,7 @@ body.recruiter-mode .recruiter-mode-btn {
 .terminal-prompt { color: var(--current-accent); font-weight: 700; }
 .terminal-input { flex: 1; background: transparent; border: none; outline: none; font-family: 'Space Mono', monospace; font-size: 0.7rem; color: #fff; }
 
-/* ================= SKILLS COCKPIT ================= */
+/* ================= 6. SKILLS COCKPIT ================= */
 .skills-telemetry-ribbon {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1511,18 +1656,8 @@ body.recruiter-mode .recruiter-mode-btn {
   flex-direction: column;
   gap: 2px;
 }
-.telemetry-val {
-  font-family: 'VT323', monospace;
-  font-size: 1.45rem;
-  color: var(--current-accent);
-  line-height: 1;
-}
-.telemetry-lbl {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.6rem;
-  color: var(--text-muted);
-  letter-spacing: 0.5px;
-}
+.telemetry-val { font-family: 'VT323', monospace; font-size: 1.45rem; color: var(--current-accent); line-height: 1; }
+.telemetry-lbl { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.5px; }
 
 .skills-cockpit-layout {
   display: grid;
@@ -1531,7 +1666,6 @@ body.recruiter-mode .recruiter-mode-btn {
   align-items: start;
   margin-top: 10px;
 }
-
 .radar-telemetry-pod {
   background: var(--panel-glass);
   border: 1.5px solid var(--glass-border);
@@ -1543,21 +1677,8 @@ body.recruiter-mode .recruiter-mode-btn {
   gap: 14px;
   box-shadow: 0 14px 35px rgba(0, 0, 0, 0.4);
 }
-.radar-head-tag {
-  font-family: 'Righteous', sans-serif;
-  font-size: 1.05rem;
-  color: var(--current-accent);
-  text-align: center;
-  letter-spacing: 1px;
-}
-.radar-canvas-housing {
-  position: relative;
-  width: 250px;
-  height: 250px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+.radar-head-tag { font-family: 'Righteous', sans-serif; font-size: 1.05rem; color: var(--current-accent); text-align: center; letter-spacing: 1px; }
+.radar-canvas-housing { position: relative; width: 250px; height: 250px; display: flex; align-items: center; justify-content: center; }
 #skills-radar-canvas { width: 240px; height: 240px; display: block; }
 .radar-diag-info {
   background: rgba(0, 0, 0, 0.45);
@@ -1586,10 +1707,7 @@ body.recruiter-mode .recruiter-mode-btn {
   gap: 12px;
   transition: border-color 0.25s ease, transform 0.2s ease;
 }
-.skill-category-card:hover {
-  border-color: var(--current-accent);
-  transform: translateY(-2px);
-}
+.skill-category-card:hover { border-color: var(--current-accent); transform: translateY(-2px); }
 .skill-cat-header { display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--subtle-border); padding-bottom: 8px; }
 .skill-cat-icon { font-size: 1.3rem; }
 .skill-cat-title { font-family: 'Righteous', sans-serif; font-size: 1.05rem; color: var(--current-accent); }
@@ -1629,13 +1747,9 @@ body.recruiter-mode .recruiter-mode-btn {
   transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 0 8px var(--current-accent);
 }
-.skill-note-sub {
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  font-family: 'Space Mono', monospace;
-}
+.skill-note-sub { font-size: 0.65rem; color: var(--text-muted); font-family: 'Space Mono', monospace; }
 
-/* ================= ELSEWHERE & SOUND ================= */
+/* ================= 7. ELSEWHERE & SOUND ================= */
 .elsewhere-sound-console {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
@@ -1691,13 +1805,8 @@ body.recruiter-mode .recruiter-mode-btn {
   align-items: center;
   justify-content: center;
 }
-.tape-reel.spinning {
-  animation: reelSpin 2s linear infinite;
-}
-@keyframes reelSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+.tape-reel.spinning { animation: reelSpin 2s linear infinite; }
+@keyframes reelSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .tape-reel-teeth {
   width: 22px;
   height: 22px;
@@ -1731,10 +1840,7 @@ body.recruiter-mode .recruiter-mode-btn {
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
 }
-.tape-control-btn:hover, .tape-control-btn.active {
-  border-color: var(--current-accent);
-  color: var(--current-accent);
-}
+.tape-control-btn:hover, .tape-control-btn.active { border-color: var(--current-accent); color: var(--current-accent); }
 
 .elsewhere-track-list { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
 .elsewhere-track-row {
@@ -1749,10 +1855,7 @@ body.recruiter-mode .recruiter-mode-btn {
   transition: border-color 0.2s ease, background 0.2s ease;
   cursor: pointer;
 }
-.elsewhere-track-row:hover, .elsewhere-track-row.active {
-  border-color: var(--current-accent);
-  background: rgba(255, 255, 255, 0.08);
-}
+.elsewhere-track-row:hover, .elsewhere-track-row.active { border-color: var(--current-accent); background: rgba(255, 255, 255, 0.08); }
 .ew-trk-num { font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--text-muted); }
 .ew-trk-info { display: flex; flex-direction: column; gap: 2px; }
 .ew-trk-name { font-size: 0.85rem; font-weight: 600; color: var(--text-pure); }
@@ -1760,7 +1863,7 @@ body.recruiter-mode .recruiter-mode-btn {
 .ew-trk-time { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--text-muted); text-align: right; }
 .ew-trk-play-icon { color: var(--current-accent); font-size: 0.85rem; text-align: center; }
 
-/* 35mm Optics */
+/* Optics & Cards */
 .analog-optics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
 .analog-photo-card {
   background: var(--panel-glass);
@@ -1778,7 +1881,6 @@ body.recruiter-mode .recruiter-mode-btn {
 .analog-photo-title { font-size: 0.88rem; font-weight: 700; color: var(--text-pure); }
 .analog-photo-tag { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--current-accent); }
 
-/* Bento Cards */
 .sunakku-grid { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
 .sunakku-left-col, .sunakku-right-col { display: flex; flex-direction: column; gap: 16px; }
 .sunakku-card {
@@ -1818,7 +1920,7 @@ body.recruiter-mode .recruiter-mode-btn {
 }
 .sunakku-cta-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
-/* Archive Vault */
+/* Archive */
 .archive-vault-table { display: flex; flex-direction: column; gap: 10px; }
 .archive-vault-row {
   background: var(--panel-glass);
@@ -1873,7 +1975,7 @@ body.recruiter-mode .recruiter-mode-btn {
 .track-shift-btn:hover { color: var(--text-pure); }
 .hint-pill { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--text-muted); }
 
-/* ================= MODAL BOX ================= */
+/* ================= 8. MODAL BOX ================= */
 .retro-modal {
   position: fixed;
   inset: 0;
@@ -1891,11 +1993,7 @@ body.recruiter-mode .recruiter-mode-btn {
   pointer-events: none;
   transition: opacity 0.2s ease, visibility 0.2s ease;
 }
-.retro-modal.active {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
+.retro-modal.active { opacity: 1; visibility: visible; pointer-events: auto; }
 .modal-box {
   width: min(660px, 92vw);
   max-height: 88vh;
@@ -1905,7 +2003,7 @@ body.recruiter-mode .recruiter-mode-btn {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 25px rgba(255, 71, 126, 0.15);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
   position: relative;
   z-index: 10;
 }
@@ -1918,13 +2016,7 @@ body.recruiter-mode .recruiter-mode-btn {
   border-bottom: 1px solid var(--glass-border);
   flex-shrink: 0;
 }
-.modal-title {
-  font-family: 'Space Mono', monospace;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--current-accent);
-  letter-spacing: 1px;
-}
+.modal-title { font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; color: var(--current-accent); letter-spacing: 1px; }
 .modal-close-btn {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--glass-border);
@@ -1937,15 +2029,9 @@ body.recruiter-mode .recruiter-mode-btn {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  pointer-events: auto;
   transition: background 0.2s ease, transform 0.2s ease;
 }
-.modal-close-btn:hover {
-  background: #ff477e;
-  border-color: #ff477e;
-  color: #ffffff;
-  transform: scale(1.08);
-}
+.modal-close-btn:hover { background: #ff477e; border-color: #ff477e; color: #ffffff; transform: scale(1.08); }
 .modal-body {
   padding: 20px;
   overflow-y: auto;
@@ -1966,7 +2052,7 @@ body.recruiter-mode .recruiter-mode-btn {
 .case-metric-val { font-family: 'VT323', monospace; font-size: 1.3rem; color: var(--current-accent); }
 .case-metric-lbl { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--text-muted); }
 
-/* ================= RESPONSIVE ADAPTATIONS ================= */
+/* ================= 9. MOBILE OPTIMIZATIONS & ANTI-LAG ================= */
 @media (max-width: 960px) {
   .y2k-masthead { width: 100%; }
   .slender-rack { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 100%; }
@@ -1983,12 +2069,19 @@ body.recruiter-mode .recruiter-mode-btn {
 }
 
 @media (max-width: 768px) {
+  /* Throttle expensive blur effects on mobile for 60fps scrolling */
+  .retro-audio-pod, .editorial-container, .modal-box, .y2k-masthead {
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+  .card-glare { display: none !important; }
+
   .osd-bar { padding: 10px 14px; }
   .osd-corner.osd-tr, .osd-bottom { display: none; }
   .osd-center-controls { justify-content: flex-end; width: 100%; }
   .osd-pill-btn { padding: 4px 8px; font-size: 0.58rem; }
   .editorial-container { width: 98vw; height: 94vh; }
-  .dossier-scroll-area { padding: 14px; }
+  .dossier-scroll-area { padding: 14px; gap: 16px; }
   
   .contact-platforms-grid {
     display: flex;
@@ -2034,17 +2127,14 @@ body.recruiter-mode .recruiter-mode-btn {
     width: 92vw;
     top: 55px;
   }
-  .retro-audio-pod.open {
-    transform: translate3d(50%, 0, 0) scale(1) !important;
-  }
+  .retro-audio-pod.open { transform: translate3d(50%, 0, 0) scale(1) !important; }
   
   .resume-hud-btn span:last-child { display: none; }
   .skills-telemetry-ribbon { grid-template-columns: 1fr 1fr; }
   .cassette-visual-deck { padding: 0 15px; }
 
-  .modal-actions-rack {
-    grid-template-columns: 1fr;
-  }
+  .members-roster-grid { grid-template-columns: 1fr; }
+  .modal-actions-rack { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
