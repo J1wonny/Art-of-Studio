@@ -1,7 +1,7 @@
 /**
- * ART OF DRAKE // SYSTEM CORE v4.2
- * Refactored & Optimized Architecture
- * Restored: Original "About Me" & "Skills" Student Details
+ * ART OF STUDIO ★ // COLLECTIVE CORE v4.2
+ * Complete Studio Script Engine: Scalable Member Roster, Walkman Audio,
+ * Interactive Chapters, Radar Telemetry, and Performance Optimizations.
  */
 
 let activeChapter = null;
@@ -69,7 +69,7 @@ const AudioSFX = {
   }
 };
 
-/* ================= 2. 60 FPS TELEMETRY COUNTER ================= */
+/* ================= 2. 60 FPS V-SYNC TELEMETRY ================= */
 const fpsCounter = document.getElementById('fps-counter');
 let lastFpsTime = performance.now();
 let fpsFrameCount = 0;
@@ -87,7 +87,7 @@ function updateRealFPS() {
 }
 requestAnimationFrame(updateRealFPS);
 
-/* ================= 3. MOBILE PERFORMANCE & CANVAS SCALING ================= */
+/* ================= 3. MOBILE CANVAS OPTIMIZATIONS ================= */
 const canvas = document.getElementById('ambient-canvas');
 const ctx = canvas ? canvas.getContext('2d') : null;
 let particles = [];
@@ -108,7 +108,6 @@ function isMobileScreen() {
 
 function resizeCanvas() {
   if (!canvas) return;
-  // Dynamic scaling: Limit DPR on mobile to conserve GPU fillrate and battery
   const dpr = isMobileScreen() ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5);
   canvas.width = window.innerWidth * dpr;
   canvas.height = window.innerHeight * dpr;
@@ -120,7 +119,7 @@ function resizeCanvas() {
 window.addEventListener('resize', () => {
   resizeCanvas();
   reinitParticles();
-});
+}, { passive: true });
 resizeCanvas();
 
 class AmbientParticle {
@@ -157,9 +156,7 @@ class AmbientParticle {
 function reinitParticles() {
   particles = [];
   if (isReducedMotion) return;
-  
-  // Mobile throttle: 8 particles for mobile, 22 for desktop
-  const count = isMobileScreen() ? 8 : 22;
+  const count = isMobileScreen() ? 6 : 22;
   for (let i = 0; i < count; i++) {
     particles.push(new AmbientParticle());
   }
@@ -168,7 +165,6 @@ reinitParticles();
 
 let lastCanvasFrame = 0;
 function animateAtmosphere(timestamp) {
-  // Mobile framerate throttling: limit canvas redraws to ~30 FPS on mobile to reserve 60fps for UI scrolling
   const targetInterval = isMobileScreen() ? 33 : 16;
   const elapsed = timestamp - lastCanvasFrame;
 
@@ -183,7 +179,7 @@ function animateAtmosphere(timestamp) {
         ctx.fillStyle = isGold ? '#ffd700' : '#2eed9e';
         ctx.font = '14px "VT323", monospace';
 
-        const chars = '01DRAKEヲアイウエオカキサシスセソタチツテ';
+        const chars = '01STUDIOヲアイウエオカキサシスセソタチツテ';
         for (let i = 0; i < matrixDrops.length; i++) {
           const text = chars[Math.floor(Math.random() * chars.length)];
           ctx.fillText(text, i * 22, matrixDrops[i] * 20);
@@ -238,7 +234,7 @@ function animateCursor() {
 
 document.addEventListener('mouseover', (e) => {
   if (!retroCursor) return;
-  const isInteractive = e.target.closest('button, a, input, textarea, .slender-card, [role="button"], .archive-vault-row, .elsewhere-track-row');
+  const isInteractive = e.target.closest('button, a, input, textarea, .slender-card, [role="button"], .archive-vault-row, .elsewhere-track-row, .member-operative-card');
   retroCursor.classList.toggle('hovered', !!isInteractive);
 });
 
@@ -280,7 +276,7 @@ function apply3DTilt(element, maxAngle = 10) {
 }
 document.querySelectorAll('.slender-card').forEach(card => apply3DTilt(card, 10));
 
-/* ================= 6. AUDIO WIDGET SAFEGUARDS (SONY MD WALKMAN) ================= */
+/* ================= 6. AUDIO ENGINE (WALKMAN) ================= */
 const musicMenuBtn = document.getElementById('music-menu-btn');
 const retroPlayer = document.getElementById('retro-player');
 const closePlayerBtn = document.getElementById('close-player-btn');
@@ -327,7 +323,6 @@ let currentTrack = 0;
 let candidatePointer = 0;
 let isSyntheticPlayback = false;
 
-// SAFEGUARD: Enforce muted, paused, and no autoplay on initial mount
 if (audioCore) {
   audioCore.autoplay = false;
   audioCore.muted = true;
@@ -400,7 +395,7 @@ function startVirtualSynth(trackIdx) {
   if (hwPlayBtn) hwPlayBtn.textContent = '❚❚';
   if (musicIndicator) musicIndicator.classList.add('active');
   startSpectrumVisualizer();
-  showToast(`✦ SYNTH FM CHIP: ${PLAYLIST[trackIdx].name}`);
+  showToast(`✦ SYNTH CHIP: ${PLAYLIST[trackIdx].name}`);
 }
 
 function stopVirtualSynth() {
@@ -485,7 +480,7 @@ audioCore.addEventListener('error', () => {
       audioCore.play().catch(() => startVirtualSynth(currentTrack));
     }
   } else {
-    showToast(`✦ '${track.name}' NOT FOUND IN assets/ — ENGAGING SYNTH`);
+    showToast(`✦ '${track.name}' NOT FOUND — ENGAGING SYNTH`);
     startVirtualSynth(currentTrack);
   }
 });
@@ -516,10 +511,6 @@ if (seekSlider) {
   });
 }
 
-/**
- * EXPLICIT USER INTERACTION AUDIO UNLOCK HANDLER
- * Unmutes, resumes WebAudio context, and triggers playback without autoplay warnings.
- */
 function executeExplicitPlay() {
   AudioSFX.init();
   if (AudioSFX.ctx && AudioSFX.ctx.state === 'suspended') {
@@ -537,8 +528,7 @@ function executeExplicitPlay() {
       updateDiscState(true);
       startSpectrumVisualizer();
       showToast(`✦ SPINNING: ${PLAYLIST[currentTrack].name}`);
-    }).catch((err) => {
-      console.warn("Media playback restricted, engaging synth fallback:", err);
+    }).catch(() => {
       startVirtualSynth(currentTrack);
     });
   }
@@ -637,7 +627,98 @@ if (closePlayerBtn) {
   });
 }
 
-/* ================= 7. ENHANCED PROJECTS DATABASE (3-PART SPEC) ================= */
+/* ================= 7. SCALABLE MEMBERS DATABASE (1 TO 2 MEMBERS) ================= */
+/**
+ * TO ADD MORE MEMBERS IN THE FUTURE:
+ * Simply add another member object to this array. The grid layout automatically adapts!
+ */
+const MEMBERS_DATABASE = [
+  {
+    id: "drake",
+    name: "DRAKE",
+    handle: "@artofdrake",
+    uid: "UID: 0042-99",
+    role: "Co-Founder / Front-End Architect",
+    specialty: "Creative UI & Responsive Interaction",
+    status: "AVAILABLE FOR PROJECTS",
+    statusColor: "#ff477e",
+    level: "BSIT — Year 2",
+    location: "Philippines / Remote",
+    avatar: "assets/PFP3.jpg",
+    fallbackAvatar: "HEADER1.jpg",
+    cover: "assets/HEADER1.jpg",
+    fallbackCover: "HEADER1.jpg",
+    email: "artof.lab.studio@gmail.com",
+    resume: "assets/resume.pdf",
+    shortBio: "Front-end enthusiast focused on turning retro cyber aesthetics into fluid, modern interactive web experiences.",
+    bio: [
+      "Hey, I’m Drake. I’m a 2nd year BSIT student from the Philippines who enjoys making websites, experimenting with designs, and turning random ideas into actual projects.",
+      "In our studio, I lead the front-end styling, typography, retro UI interactions, and visual layout. I’ve worked with HTML5, CSS3, JavaScript, and WebAudio with lots of experimentation and attention to detail.",
+      "Outside of coding, I’m into gaming, analog cameras, audio gear, and finding new ways to make web apps feel tactile."
+    ],
+    vitals: {
+      status: "BUILDING & EXPLORING",
+      experience: "2+ YEARS OF WEB CRAFT",
+      focus: "FRONT-END / RETRO UI / AESTHETICS",
+      location: "PHILIPPINES / REMOTE",
+      level: "BSIT — YEAR 2",
+      mission: "CREATE MEMORABLE INTERFACES."
+    },
+    milestones: [
+      { period: "2026 — PRESENT", title: "STUDIO CO-FOUNDER & FRONT-END", desc: "Leading the creative UI direction and component architecture for Art of Studio." },
+      { period: "2025 — ADVANCEMENT", title: "BSIT CORE EXPLORATION", desc: "Studied relational databases, OOP programming with Java, and scalable web structure." },
+      { period: "2024 — EXPERIMENTS", title: "UI PROTOTYPER", desc: "Crafted retro interactive widgets, CSS 3D perspective cards, and custom themes." },
+      { period: "2023 — FOUNDATIONS", title: "ICT BASICS", desc: "Began coding with semantic HTML, CSS stylesheets, and core JavaScript logic." }
+    ],
+    rig: "Dual monitors setup, mechanical keyboard, VS Code daily driver, and lofi playlist running in background.",
+    tags: ["Front-End Lead", "UI/UX Design", "BSIT Year 2", "Vanilla JS"]
+  },
+  {
+    id: "Gab",
+    name: "Gab",
+    handle: "@Gab.dev",
+    uid: "UID: 0043-01",
+    role: "Co-Founder / Systems & Backend",
+    specialty: "Logic Architecture & Data Schemas",
+    status: "OPEN TO COLLABS",
+    statusColor: "#38bdf8",
+    level: "BSIT — Year 2",
+    location: "Philippines / Remote",
+    avatar: "assets/PFP2.jpg",
+    fallbackAvatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80",
+    cover: "assets/HEADER2.jpg",
+    fallbackCover: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=1200&q=80",
+    email: "artof.lab.studio@gmail.com",
+    resume: "assets/resume.pdf",
+    shortBio: "Specializing in software architecture, database management, and building clean, resilient logic engines.",
+    bio: [
+      "Yo, I’m Gab. I’m a 2nd year BSIT student handling system logic, database modeling, and technical optimization for our studio.",
+      "I make sure our projects don't just look amazing, but run smoothly with clean structure, reliable data flow, and minimal latency.",
+      "When I'm off keyboard, I'm usually testing Linux distros, reading technical documentation, or tweaking PC hardware setups."
+    ],
+    vitals: {
+      status: "OPTIMIZING SYSTEMS",
+      experience: "2+ YEARS OF CODE & SYSTEMS",
+      focus: "BACKEND LOGIC / DATABASES / OOP",
+      location: "PHILIPPINES / REMOTE",
+      level: "BSIT — YEAR 2",
+      mission: "RELIABLE CODE. ZERO BOTTLENECK."
+    },
+    milestones: [
+      { period: "2026 — PRESENT", title: "SYSTEMS CO-FOUNDER", desc: "Co-founded Art of Studio, handling technical data schemas, Git workflows, and stability." },
+      { period: "2025 — DATABASES", title: "SQL & DATA MODELING", desc: "Designed normalized schemas, queries, and studied Java Object-Oriented patterns." },
+      { period: "2024 — COMPUTING", title: "LOGIC BUILDER", desc: "Built algorithmic CLI tools, explored modular JS, and worked with async data handling." },
+      { period: "2023 — ORIGINS", title: "ICT STUDENT", desc: "Started computer hardware fundamentals, networking basics, and early script logic." }
+    ],
+    rig: "Ultra-wide workstation, custom tactile switches, Arch Linux / VS Code, dark mode terminal.",
+    tags: ["Systems Lead", "Databases", "BSIT Year 2", "OOP & Java"]
+  }
+];
+
+// Currently selected member (null = Show Studio Collective Overview + Roster)
+let selectedMemberId = null;
+
+/* ================= 8. PROJECTS DATABASE ================= */
 const PROJECTS_DATABASE = [
   {
     id: "proj-1",
@@ -671,136 +752,157 @@ const PROJECTS_DATABASE = [
   }
 ];
 
-/* ================= 8. CHAPTER CONTENT ENGINE ================= */
+/* ================= 9. CHAPTER CONTENT ENGINE ================= */
 const CODEX_DATA = {
   about: {
     num: "TRACK 01",
-    title: "About Me",
-    category: "Identity & Profile",
+    title: "About Us",
+    category: "Studio Collective & Roster",
     accent: "#ff477e",
     coverImg: "assets/ABOUT ME - COVER.png",
     fallbackCover: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=1200&q=80",
-    avatarImg: "assets/profile-avatar.png",
-    fallbackAvatar: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=300&q=80",
+    
     render() {
+      // If a specific member is selected, render their individual dossier!
+      if (selectedMemberId) {
+        return renderMemberProfile(selectedMemberId);
+      }
+
+      // Otherwise, render the Studio Collective Hub + Member Roster
       return `
+      <!-- STUDIO COLLECTIVE COVER -->
       <div class="profile-full-wrapper">
         <div class="fb-discord-cover">
-          <img class="fb-discord-cover-img" src="${this.coverImg}" alt="About Cover" onerror="this.src='${this.fallbackCover}'" />
+          <img class="fb-discord-cover-img" src="${this.coverImg}" alt="Studio Cover" onerror="this.src='${this.fallbackCover}'" />
           <div class="fb-discord-cover-scrim"></div>
 
           <div class="cover-top-controls">
-            <span class="cover-tag-callout">ART OF DRAKE ✦</span>
-            <span class="cover-tag-callout">MANILA / TOKYO DIRECT</span>
+            <span class="cover-tag-callout">ART OF STUDIO ✦ COLLECTIVE</span>
+            <span class="cover-tag-callout">${MEMBERS_DATABASE.length} ACTIVE OPERATIVES</span>
           </div>
 
-          <div class="cover-bottom-caption">
-            <span class="cover-kicker">analog visualist & student developer</span>
-            <h2 class="cover-main-title">Web Developer</h2>
+          <div class="cover-bottom-caption" style="margin-left:0; max-width:100%;">
+            <span class="cover-kicker">creative tech & front-end studio collective</span>
+            <h2 class="cover-main-title">ABOUT US // THE COLLECTIVE</h2>
           </div>
         </div>
 
-        <div class="profile-bar-shelf">
-          <div class="profile-avatar-container">
-            <img class="profile-avatar-img" src="${this.avatarImg}" alt="Profile Picture" onerror="this.src='${this.fallbackAvatar}'" />
-            <div class="profile-online-dot" title="Status: Online & Ready"></div>
-          </div>
-
+        <div class="profile-bar-shelf" style="padding-top:20px;">
           <div class="profile-text-content">
             <div class="profile-primary-row">
               <div>
-                <h1 class="profile-username">DRAKE <span class="profile-verified-star">✦</span></h1>
-                <span class="profile-user-handle">@artofdrake // UID: 0042-99</span>
+                <h1 class="profile-username">ART OF STUDIO <span class="profile-verified-star">✦</span></h1>
+                <span class="profile-user-handle">@artofstudio // CO-OP CODEX</span>
               </div>
               <div class="profile-action-btns">
                 <a href="assets/resume.pdf" target="_blank" rel="noopener noreferrer" class="sunakku-cta-btn" style="background:#ff477e;">
-                  📄 View Resume [PDF]
+                  📄 Studio Deck [PDF]
                 </a>
-                <button class="sunakku-cta-btn" onclick="copyBufferInteraction(this, 'artof.lab.studio@gmail.com')">✉ Say Hello</button>
-                <button class="profile-sub-btn" onclick="copyBufferInteraction(this, 'artof.lab.studio@gmail.com')">Copy Email</button>
+                <button class="profile-sub-btn" onclick="copyBufferInteraction(this, 'artof.lab.studio@gmail.com')">Copy Studio Email</button>
               </div>
             </div>
 
             <div class="profile-badge-rack">
-              <span class="profile-role-chip">BSIT Student</span>
-              <span class="profile-role-chip">Front-End Builder</span>
-              <span class="profile-role-chip">Analog Aesthetics Enthusiast</span>
-              <span class="profile-status-chip">● AVAILABLE FOR PROJECTS</span>
+              <span class="profile-role-chip">Creative Dev Group</span>
+              <span class="profile-role-chip">BSIT Undergraduates</span>
+              <span class="profile-role-chip">Analog & Y2K Aesthetics</span>
+              <span class="profile-status-chip">● OPEN FOR NEW PROJECTS</span>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- MEMBER ROSTER SECTION (1 TO 2 MEMBERS, SCALABLE) -->
+      <div class="roster-navigation-header">
+        <span class="roster-header-title">✦ STUDIO OPERATIVE ROSTER // CLICK A MEMBER TO VIEW THEIR PROFILE</span>
+        <span style="font-family:'Space Mono', monospace; font-size:0.65rem; color:var(--text-muted);">${MEMBERS_DATABASE.length} MEMBERS REGISTERED</span>
+      </div>
+
+      <div class="members-roster-grid">
+        ${MEMBERS_DATABASE.map((member) => `
+          <div class="member-operative-card" onclick="viewMemberDossier('${member.id}')" tabindex="0" role="button" aria-label="View ${member.name}'s profile">
+            <div class="member-op-header">
+              <div class="member-op-avatar-wrap">
+                <img class="member-op-avatar-img" src="${member.avatar}" alt="${member.name}" onerror="this.src='${member.fallbackAvatar}'" />
+                <div class="member-op-status-dot" style="background:${member.statusColor}; box-shadow:0 0 8px ${member.statusColor};"></div>
+              </div>
+              <div class="member-op-meta">
+                <h3 class="member-op-callsign">${member.name} ✦</h3>
+                <span class="member-op-role">${member.role}</span>
+                <span class="member-op-uid">${member.uid} · ${member.location}</span>
+              </div>
+            </div>
+
+            <p class="member-op-snippet">${member.shortBio}</p>
+
+            <div class="member-op-tags-row">
+              ${member.tags.map(t => `<span class="member-op-chip">${t}</span>`).join('')}
+            </div>
+
+            <div class="member-op-cta-strip">
+              <span class="member-op-action-lbl">INSPECT DOSSIER ↗</span>
+              <span style="font-family:'Space Mono', monospace; font-size:0.62rem; color:var(--text-muted);">${member.level}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- STUDIO BENTO OVERVIEW -->
       <div class="sunakku-grid">
         <div class="sunakku-left-col">
           <div class="sunakku-card">
-            <h3 class="sunakku-heading">WHO I AM</h3>
+            <h3 class="sunakku-heading">WHO WE ARE</h3>
             <p class="sunakku-copy">
-              Hey, I’m Drake. I’m a 2nd year BSIT student from the Philippines who enjoys making websites, experimenting with designs, and turning random ideas into actual projects.
+              We are <strong>Art of Studio</strong>, a creative development collective formed by 2nd year BSIT students from the Philippines. We combine front-end experimentation, retro analog aesthetics, and clean modern web engineering.
             </p>
             <p class="sunakku-copy">
-              I started learning web development from scratch, and I’m still figuring things out as I go. I’ve worked with HTML, CSS, JavaScript, and a few other things — with a lot of trial, error, and probably way too many tabs open.
+              Instead of building ordinary websites, we craft tactile digital spaces that draw inspiration from late 90s cyberdecks, Sony MiniDisc players, and nostalgic digital relics.
             </p>
             <p class="sunakku-copy">
-              Outside of coding, I’m into games, digital design, creative stuff, and basically anything that gives me an excuse to build something. I’m still a student, still learning, and still improving.
+              We learn together, prototype together, and constantly level up our craft with every build.
             </p>
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;">
-              <a href="assets/resume.pdf" target="_blank" rel="noopener noreferrer" class="sunakku-cta-btn">
-                📄 curriculum vitae [pdf]
-              </a>
-              <button class="sunakku-cta-btn" style="background:transparent; border:1px solid var(--current-accent); color:var(--current-accent);" onclick="copyBufferInteraction(this, 'hello@drakeportfolio.dev')">
-                say hello ✉
-              </button>
-            </div>
           </div>
 
           <div class="sunakku-card">
-            <h3 class="sunakku-heading">STATUS & VITALS</h3>
+            <h3 class="sunakku-heading">STUDIO VITALS</h3>
             <div class="sunakku-copy" style="font-family:'Space Mono', monospace; font-size:0.75rem; display:flex; flex-direction:column; gap:8px;">
-              <div>CURRENT STATUS: <strong style="color:var(--current-accent);">STILL LEARNING / OPEN TO OPPORTUNITIES</strong></div>
-              <div>EXPERIENCE: <strong>2+ YEARS OF LEARNING & BUILDING</strong></div>
-              <div>FOCUS: <strong>WEB DESIGN / CREATIVE UI / FRONT-END</strong></div>
-              <div>LOCATION: <strong>PHILIPPINES / REMOTE</strong></div>
-              <div>CURRENT LEVEL: <strong>BSIT — YEAR 2</strong></div>
-              <div>CURRENT MISSION: <strong>BUILD. LEARN. IMPROVE. REPEAT.</strong></div>
+              <div>TEAM STATUS: <strong style="color:var(--current-accent);">ACTIVE / OPEN FOR COLLABS</strong></div>
+              <div>COLLECTIVE FOCUS: <strong>CREATIVE WEB APPS / UI-UX / FRONT-END</strong></div>
+              <div>LOCATION: <strong>MANILA / REMOTE DIRECT</strong></div>
+              <div>EDUCATION: <strong>BSIT UNDERGRADUATE SQUAD</strong></div>
+              <div>MISSION: <strong>EXPERIMENT. DESIGN. SHIP. REPEAT.</strong></div>
             </div>
           </div>
         </div>
 
         <div class="sunakku-right-col">
           <div class="sunakku-card">
-            <h3 class="sunakku-heading">CHRONICLE & MILESTONES</h3>
+            <h3 class="sunakku-heading">COLLECTIVE MILESTONES</h3>
             <div style="display:flex; flex-direction:column; gap:14px; margin-top:6px;">
               <div style="border-left: 2px solid var(--current-accent); padding-left: 14px;">
                 <span style="font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--current-accent);">2026 — PRESENT</span>
-                <h4 style="color:#fff; font-size:0.95rem; margin:2px 0;">BSIT STUDENT & WEB DEVELOPER IN PROGRESS</h4>
-                <p class="sunakku-copy">Currently in my 2nd year of BSIT, learning more about programming, databases, and web development while building projects along the way.</p>
+                <h4 style="color:#fff; font-size:0.95rem; margin:2px 0;">STUDIO CODEX & COLLABORATIVE LAB</h4>
+                <p class="sunakku-copy">Unified our individual projects under Art of Studio to ship modular web experiments and interactive portfolios.</p>
               </div>
 
               <div style="border-left: 2px solid var(--glass-border); padding-left: 14px;">
-                <span style="font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--text-muted);">2025 — NEW SAVE FILE</span>
-                <h4 style="color:#fff; font-size:0.95rem; margin:2px 0;">BSIT STUDENT</h4>
-                <p class="sunakku-copy">Started my BSIT journey and began exploring more than just websites — including programming, databases, and core IT topics.</p>
+                <span style="font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--text-muted);">2025 — CO-OP FOUNDATION</span>
+                <h4 style="color:#fff; font-size:0.95rem; margin:2px 0;">BSIT STUDY SQUAD</h4>
+                <p class="sunakku-copy">Teamed up across coursework, programming logic, system design, and database architecture.</p>
               </div>
 
               <div style="border-left: 2px solid var(--glass-border); padding-left: 14px;">
-                <span style="font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--text-muted);">2024 — LEVELING UP</span>
-                <h4 style="color:#fff; font-size:0.95rem; margin:2px 0;">LEARNING & EXPERIMENTING</h4>
-                <p class="sunakku-copy">Started building more websites and messing around with different designs, layouts, and ideas. A lot of trial and error happened here.</p>
-              </div>
-
-              <div style="border-left: 2px solid var(--glass-border); padding-left: 14px;">
-                <span style="font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--text-muted);">2023 — THE START</span>
-                <h4 style="color:#fff; font-size:0.95rem; margin:2px 0;">ICT STUDENT</h4>
-                <p class="sunakku-copy">Started learning computers, HTML, CSS, and the basics of web development. Eventually, things started making a lot more sense.</p>
+                <span style="font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--text-muted);">2024 — EARLY BUILDS</span>
+                <h4 style="color:#fff; font-size:0.95rem; margin:2px 0;">WEB PROTOTYPES</h4>
+                <p class="sunakku-copy">First independent websites, CSS animations, and exploring retro-tech UI trends.</p>
               </div>
             </div>
           </div>
 
           <div class="sunakku-card">
-            <h3 class="sunakku-heading">STUDIO RIG</h3>
+            <h3 class="sunakku-heading">OUR STUDIO RIG</h3>
             <p class="sunakku-copy">
-              Dual monitors setup, mechanical keyboard, VS Code daily driver, and lofi playlist in the background.
+              Multi-monitor developer battlestations, mechanical keyboards, Git collaboration pipelines, and 24/7 lofi playlists.
             </p>
           </div>
         </div>
@@ -814,7 +916,7 @@ const CODEX_DATA = {
   projects: {
     num: "TRACK 02",
     title: "Projects",
-    category: "Missions & Builds",
+    category: "Missions & Studio Builds",
     accent: "#ff9248",
     coverImg: "assets/PROJECTS - COVER.png",
     fallbackCover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80",
@@ -831,19 +933,19 @@ const CODEX_DATA = {
             <button class="cover-tab-btn" onclick="filterProjects('EXHIBITS', this)">EXHIBITS</button>
           </div>
           <div class="cover-tag-callout">
-            <span id="proj-count-label">PROJECT BUILDS</span>
+            <span id="proj-count-label">STUDIO BUILDS</span>
           </div>
         </div>
 
         <div class="cover-bottom-caption">
-          <span class="cover-kicker">student builds & web prototypes</span>
-          <h2 class="cover-main-title">PROJECT SHOWCASE</h2>
+          <span class="cover-kicker">our collective builds & web prototypes</span>
+          <h2 class="cover-main-title">STUDIO SHOWCASE</h2>
         </div>
       </div>
 
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
         <span style="font-family:'Space Mono',monospace; font-size:0.75rem; color:var(--current-accent); font-weight:700;">
-          ✦ PROJECT SHOWCASE // CLICK A CARD FOR DETAILS
+          ✦ OUR BUILDS // CLICK A CARD FOR SPECS
         </span>
         <span style="font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--text-muted);">
           SWIPE OR USE BUTTONS TO NAVIGATE →
@@ -886,38 +988,38 @@ const CODEX_DATA = {
             <button class="cover-tab-btn" onclick="filterSkills('TOOLS', this)">WORKFLOW</button>
           </div>
           <div class="cover-tag-callout">
-            <span>BSIT YR-2 TELEMETRY ACTIVE</span>
+            <span>COLLECTIVE TELEMETRY ACTIVE</span>
           </div>
         </div>
 
         <div class="cover-bottom-caption">
-          <span class="cover-kicker">current tech stack & learning progression</span>
+          <span class="cover-kicker">our combined tech stack & capabilities</span>
           <h2 class="cover-main-title">CAPABILITIES COCKPIT</h2>
         </div>
       </div>
 
       <div class="skills-telemetry-ribbon">
         <div class="telemetry-cell">
-          <span class="telemetry-val">2ND YR</span>
-          <span class="telemetry-lbl">BSIT UNDERGRAD LEVEL</span>
+          <span class="telemetry-val">${MEMBERS_DATABASE.length} DEV</span>
+          <span class="telemetry-lbl">COLLECTIVE CO-FOUNDERS</span>
         </div>
         <div class="telemetry-cell">
-          <span class="telemetry-val">68% AVG</span>
+          <span class="telemetry-val">74% AVG</span>
           <span class="telemetry-lbl">CORE STACK READINESS</span>
         </div>
         <div class="telemetry-cell">
-          <span class="telemetry-val">VANILLA</span>
-          <span class="telemetry-lbl">FOUNDATIONAL FOCUS</span>
+          <span class="telemetry-val">FULL-STACK</span>
+          <span class="telemetry-lbl">FRONT & BACK SYNERGY</span>
         </div>
         <div class="telemetry-cell">
           <span class="telemetry-val">ACTIVE</span>
-          <span class="telemetry-lbl">SKILL TREE LEVELING</span>
+          <span class="telemetry-lbl">STUDIO LEVELING UP</span>
         </div>
       </div>
 
       <div class="skills-cockpit-layout">
         <div class="radar-telemetry-pod">
-          <h3 class="radar-head-tag">6-AXIS CAPABILITY RADAR</h3>
+          <h3 class="radar-head-tag">6-AXIS STUDIO RADAR</h3>
           <div class="radar-canvas-housing">
             <canvas id="skills-radar-canvas" width="240" height="240"></canvas>
           </div>
@@ -925,7 +1027,7 @@ const CODEX_DATA = {
             ✦ HOVER RADAR NODES TO INSPECT PROFICIENCY
           </div>
           <button class="sunakku-cta-btn" onclick="triggerCrtTransition(() => openChapter('projects'))" style="width:100%;">
-            VIEW MY PROJECTS →
+            VIEW OUR PROJECTS →
           </button>
         </div>
 
@@ -935,55 +1037,55 @@ const CODEX_DATA = {
             <div class="skill-cat-header">
               <span class="skill-cat-icon">🌐</span>
               <div>
-                <h3 class="skill-cat-title">Front-End & Web Development</h3>
-                <p class="skill-cat-desc">Building structured markup and writing clean scripts to make static pages interactive.</p>
+                <h3 class="skill-cat-title">Front-End & Web Architecture</h3>
+                <p class="skill-cat-desc">Building structured semantic markup, dynamic state machines, and responsive interactive code.</p>
               </div>
             </div>
             <div class="skill-items-list">
               <div class="skill-item-bar">
                 <div class="skill-item-labels">
-                  <span class="skill-name-tag">HTML5 & Semantic Markup</span>
-                  <span class="skill-tier-badge">TIER III // 75%</span>
+                  <span class="skill-name-tag">HTML5 & Semantic Structure</span>
+                  <span class="skill-tier-badge">TIER III // 80%</span>
                 </div>
-                <div class="skill-track"><div class="skill-fill" style="width:75%;"></div></div>
-                <span class="skill-note-sub">Accessible layouts, proper page structure, forms, and clean markup without tag soup.</span>
+                <div class="skill-track"><div class="skill-fill" style="width:80%;"></div></div>
+                <span class="skill-note-sub">Accessible layouts, modern form elements, and cleanly structured code without tag soup.</span>
               </div>
               <div class="skill-item-bar">
                 <div class="skill-item-labels">
                   <span class="skill-name-tag">JavaScript (ES6+ Core)</span>
-                  <span class="skill-tier-badge">TIER II // 65%</span>
+                  <span class="skill-tier-badge">TIER III // 72%</span>
                 </div>
-                <div class="skill-track"><div class="skill-fill" style="width:65%;"></div></div>
-                <span class="skill-note-sub">DOM manipulation, event handling, simple fetch requests, and interactive UI logic.</span>
+                <div class="skill-track"><div class="skill-fill" style="width:72%;"></div></div>
+                <span class="skill-note-sub">DOM manipulation, state management, asynchronous fetch calls, and dynamic rendering.</span>
               </div>
             </div>
           </div>
 
-          <!-- Category 2: Creative UI & Interaction -->
+          <!-- Category 2: Creative UI & Design -->
           <div class="skill-category-card" data-domain="UI">
             <div class="skill-cat-header">
               <span class="skill-cat-icon">🎨</span>
               <div>
-                <h3 class="skill-cat-title">Creative UI & Interaction</h3>
-                <p class="skill-cat-desc">Designing interfaces that look clean, feel responsive, and carry a distinct retro/digital personality.</p>
+                <h3 class="skill-cat-title">Creative UI & Visual Design</h3>
+                <p class="skill-cat-desc">Designing interfaces that feel tactile, responsive, and carry a distinct retro-digital personality.</p>
               </div>
             </div>
             <div class="skill-items-list">
               <div class="skill-item-bar">
                 <div class="skill-item-labels">
-                  <span class="skill-name-tag">UI / Web Design</span>
-                  <span class="skill-tier-badge">TIER IV // 80%</span>
+                  <span class="skill-name-tag">UI / Web Experience Design</span>
+                  <span class="skill-tier-badge">TIER IV // 82%</span>
                 </div>
-                <div class="skill-track"><div class="skill-fill" style="width:80%;"></div></div>
-                <span class="skill-note-sub">Wireframing, visual hierarchy, retro-tech aesthetics, and intuitive user experiences.</span>
+                <div class="skill-track"><div class="skill-fill" style="width:82%;"></div></div>
+                <span class="skill-note-sub">Retro-tech styling, cybernetic aesthetics, wireframing, and intuitive user experiences.</span>
               </div>
               <div class="skill-item-bar">
                 <div class="skill-item-labels">
                   <span class="skill-name-tag">CSS3 & Responsive Styling</span>
-                  <span class="skill-tier-badge">TIER III // 78%</span>
+                  <span class="skill-tier-badge">TIER IV // 80%</span>
                 </div>
-                <div class="skill-track"><div class="skill-fill" style="width:78%;"></div></div>
-                <span class="skill-note-sub">Flexbox, CSS Grid, media queries for mobile, clean transitions, and custom dark/light themes.</span>
+                <div class="skill-track"><div class="skill-fill" style="width:80%;"></div></div>
+                <span class="skill-note-sub">Flexbox, CSS Grid, mobile media queries, smooth transitions, and custom dark/light themes.</span>
               </div>
             </div>
           </div>
@@ -994,25 +1096,25 @@ const CODEX_DATA = {
               <span class="skill-cat-icon">💾</span>
               <div>
                 <h3 class="skill-cat-title">Programming & Databases</h3>
-                <p class="skill-cat-desc">Foundations from college coursework covering OOP logic, simple algorithms, and structured tables.</p>
+                <p class="skill-cat-desc">Coursework foundations covering object-oriented programming, data structures, and relational storage.</p>
               </div>
             </div>
             <div class="skill-items-list">
               <div class="skill-item-bar">
                 <div class="skill-item-labels">
-                  <span class="skill-name-tag">Java (OOP Fundamentals)</span>
-                  <span class="skill-tier-badge">TIER II // 55%</span>
+                  <span class="skill-name-tag">Java (OOP Foundations)</span>
+                  <span class="skill-tier-badge">TIER II // 62%</span>
                 </div>
-                <div class="skill-track"><div class="skill-fill" style="width:55%;"></div></div>
-                <span class="skill-note-sub">Object-oriented programming, classes, control structures, and simple console/school apps.</span>
+                <div class="skill-track"><div class="skill-fill" style="width:62%;"></div></div>
+                <span class="skill-note-sub">Classes, inheritance, control structures, and object-oriented principles.</span>
               </div>
               <div class="skill-item-bar">
                 <div class="skill-item-labels">
                   <span class="skill-name-tag">SQLite & Database Basics</span>
-                  <span class="skill-tier-badge">TIER I // 45%</span>
+                  <span class="skill-tier-badge">TIER II // 55%</span>
                 </div>
-                <div class="skill-track"><div class="skill-fill" style="width:45%;"></div></div>
-                <span class="skill-note-sub">Relational schema design, primary keys, and basic CRUD queries (SELECT, INSERT, UPDATE).</span>
+                <div class="skill-track"><div class="skill-fill" style="width:55%;"></div></div>
+                <span class="skill-note-sub">Schema architecture, primary/foreign keys, and relational CRUD queries.</span>
               </div>
             </div>
           </div>
@@ -1022,26 +1124,26 @@ const CODEX_DATA = {
             <div class="skill-cat-header">
               <span class="skill-cat-icon">🛠️</span>
               <div>
-                <h3 class="skill-cat-title">Tools & Workflow</h3>
-                <p class="skill-cat-desc">The software and development environment I rely on every time I sit down to build.</p>
+                <h3 class="skill-cat-title">Tools & Collective Workflow</h3>
+                <p class="skill-cat-desc">Software and collaborative toolchains our studio relies on daily.</p>
               </div>
             </div>
             <div class="skill-items-list">
               <div class="skill-item-bar">
                 <div class="skill-item-labels">
                   <span class="skill-name-tag">VS Code & DevTools</span>
-                  <span class="skill-tier-badge">TIER III // 75%</span>
+                  <span class="skill-tier-badge">TIER III // 78%</span>
                 </div>
-                <div class="skill-track"><div class="skill-fill" style="width:75%;"></div></div>
-                <span class="skill-note-sub">My daily editor setup, browser inspect element, live-server preview, and console debugging.</span>
+                <div class="skill-track"><div class="skill-fill" style="width:78%;"></div></div>
+                <span class="skill-note-sub">Workspace configurations, browser DOM inspector, live servers, and console debugging.</span>
               </div>
               <div class="skill-item-bar">
                 <div class="skill-item-labels">
-                  <span class="skill-name-tag">Git & GitHub</span>
-                  <span class="skill-tier-badge">TIER II // 65%</span>
+                  <span class="skill-name-tag">Git & GitHub Collaboration</span>
+                  <span class="skill-tier-badge">TIER II // 70%</span>
                 </div>
-                <div class="skill-track"><div class="skill-fill" style="width:65%;"></div></div>
-                <span class="skill-note-sub">Version control, managing commits, syncing repositories, and deploying live static pages.</span>
+                <div class="skill-track"><div class="skill-fill" style="width:70%;"></div></div>
+                <span class="skill-note-sub">Version control, branch management, pull requests, and live deployment pipelines.</span>
               </div>
             </div>
           </div>
@@ -1077,17 +1179,17 @@ const CODEX_DATA = {
         </div>
 
         <div class="cover-bottom-caption">
-          <span class="cover-kicker">historical builds & prototypes</span>
-          <h2 class="cover-main-title">THE ARCHIVE VAULT</h2>
+          <span class="cover-kicker">historical studio builds & prototypes</span>
+          <h2 class="cover-main-title">THE STUDIO VAULT</h2>
         </div>
       </div>
 
       <div class="archive-vault-table" style="margin-top: 10px;">
-        <div class="archive-vault-row" onclick="openRomInspector('v4.2-CODEX', 'Art of Drake Cyber Codex v4.2 stable build featuring hardware-accelerated 3D tilt cards, CRT scanlines, and ATRAC Walkman player.')">
+        <div class="archive-vault-row" onclick="openRomInspector('v4.2-CODEX', 'Art of Studio Collective Cyber Codex v4.2 stable release featuring 2-member operative rosters, Sony Walkman ATRAC audio player, and responsive hardware-accelerated layouts.')">
           <span class="arc-id">SEC-01</span>
           <div class="arc-details">
-            <span class="arc-title">Art of Drake Cyber Codex v4.2</span>
-            <span class="arc-desc">Production portfolio build with retro Walkman player and interactive chapters.</span>
+            <span class="arc-title">Art of Studio Collective Codex v4.2</span>
+            <span class="arc-desc">Studio production build featuring interactive member profiles and CRT transitions.</span>
           </div>
           <span class="arc-meta">STABLE // 15 BLOCKS</span>
           <button class="arc-btn">MOUNT</button>
@@ -1099,11 +1201,10 @@ const CODEX_DATA = {
     next: "contact"
   },
 
-  /* ================= 5. CONTACT & COMM-LINK (WITH RETRO CLIPBOARD BUFFER) ================= */
   contact: {
     num: "TRACK 05",
-    title: "Comm-Link",
-    category: "Direct Transmission",
+    title: "Contact Us",
+    category: "Studio Comm-Link",
     accent: "#38bdf8",
     coverImg: "assets/ABOUT ME - COVER.png",
     fallbackCover: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=1200&q=80",
@@ -1116,18 +1217,18 @@ const CODEX_DATA = {
         <div class="cover-top-controls">
           <div class="cover-pill-tabs">
             <button class="cover-tab-btn active">comm-link</button>
-            <button class="cover-tab-btn copy-buffer-btn" onclick="copyBufferInteraction(this, 'hello@drakeportfolio.dev')">
-              <span>📋</span> <span class="btn-label">[ COPY EMAIL ]</span>
+            <button class="cover-tab-btn copy-buffer-btn" onclick="copyBufferInteraction(this, 'artof.lab.studio@gmail.com')">
+              <span>📋</span> <span class="btn-label">[ COPY STUDIO EMAIL ]</span>
             </button>
           </div>
           <div class="cover-tag-callout">
-            <span>FREQ: 144.39 MHz ACTIVE</span>
+            <span>FREQ: 144.39 MHz ON AIR</span>
           </div>
         </div>
 
         <div class="cover-bottom-caption">
-          <span class="cover-kicker">direct dispatch & platforms</span>
-          <h2 class="cover-main-title">CONNECT WITH ME</h2>
+          <span class="cover-kicker">direct transmission & studio dispatch</span>
+          <h2 class="cover-main-title">CONNECT WITH US</h2>
         </div>
       </div>
 
@@ -1138,7 +1239,7 @@ const CODEX_DATA = {
           </div>
           <div class="social-info">
             <span class="social-name">Facebook</span>
-            <span class="social-handle">@artofdrake</span>
+            <span class="social-handle">@artofstudio</span>
           </div>
         </a>
 
@@ -1148,18 +1249,18 @@ const CODEX_DATA = {
           </div>
           <div class="social-info">
             <span class="social-name">Instagram</span>
-            <span class="social-handle">@artofdrake</span>
+            <span class="social-handle">@artofstudio</span>
           </div>
         </a>
 
         <!-- Interactive Direct Copy Card -->
-        <div class="social-card-btn copy-buffer-btn" onclick="copyBufferInteraction(this, 'hello@drakeportfolio.dev')">
+        <div class="social-card-btn copy-buffer-btn" onclick="copyBufferInteraction(this, 'artof.lab.studio@gmail.com')">
           <div class="social-icon-box">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
           </div>
           <div class="social-info">
             <span class="social-name btn-label">[ COPY EMAIL ]</span>
-            <span class="social-handle">hello@drakeportfolio.dev</span>
+            <span class="social-handle">artof.lab.studio@gmail.com</span>
           </div>
         </div>
       </div>
@@ -1174,20 +1275,20 @@ const CODEX_DATA = {
       <div class="contact-split-view" style="margin-top:12px;">
         <div class="dispatch-form-card">
           <h3 class="sunakku-heading">TRANSMIT DISPATCH</h3>
-          <input type="text" class="dispatch-input" id="disp-name" placeholder="Your Name or Call-Sign" required />
+          <input type="text" class="dispatch-input" id="disp-name" placeholder="Your Name or Team Call-Sign" required />
           <input type="email" class="dispatch-input" id="disp-email" placeholder="Your Frequency (Email)" required />
-          <textarea class="dispatch-input dispatch-textarea" id="disp-msg" placeholder="Your transmission or message..." required></textarea>
+          <textarea class="dispatch-input dispatch-textarea" id="disp-msg" placeholder="Your project inquiry or transmission..." required></textarea>
           <button class="sunakku-cta-btn" onclick="sendDispatch()">SEND TRANSMISSION ✈</button>
         </div>
 
         <div class="interactive-terminal">
           <div class="terminal-history" id="terminal-history">
-            <div class="terminal-line output-accent">★ ART OF DRAKE COMM TERMINAL v4.2</div>
-            <div class="terminal-line">Direct interactive link online. Type 'help' for command matrix.</div>
+            <div class="terminal-line output-accent">★ ART OF STUDIO COMM TERMINAL v4.2</div>
+            <div class="terminal-line">Direct studio link active. Type 'help' for command matrix.</div>
           </div>
           <div class="terminal-input-row">
-            <span class="terminal-prompt">operator@drake:~$</span>
-            <input type="text" class="terminal-input" id="terminal-input" placeholder="Type: help, specs, resume, matrix, play 1..." autocomplete="off" />
+            <span class="terminal-prompt">operator@studio:~$</span>
+            <input type="text" class="terminal-input" id="terminal-input" placeholder="Type: help, roster, deck, play 1..." autocomplete="off" />
           </div>
         </div>
       </div>
@@ -1221,7 +1322,7 @@ const CODEX_DATA = {
         </div>
 
         <div class="cover-bottom-caption">
-          <span class="cover-kicker">photography · rotation playlist</span>
+          <span class="cover-kicker">photography · collective rotation</span>
           <h2 class="cover-main-title">ELSEWHERE & SOUNDS</h2>
         </div>
       </div>
@@ -1265,7 +1366,7 @@ const CODEX_DATA = {
               <img class="analog-photo-img" src="assets/image5.png" alt="Olympus" onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=500&q=80'" />
               <div class="analog-photo-meta">
                 <span class="analog-photo-title">Olympus Mju-II 35mm ↗</span>
-                <span class="analog-photo-tag">KODAK PORTRA 400 // SHINJUKU STREETS</span>
+                <span class="analog-photo-tag">KODAK PORTRA 400 // STREETS</span>
               </div>
             </div>
 
@@ -1273,13 +1374,13 @@ const CODEX_DATA = {
               <img class="analog-photo-img" src="assets/image6.png" alt="Sony Camcorder" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=500&q=80'" />
               <div class="analog-photo-meta">
                 <span class="analog-photo-title">Sony DCR-VX1000 MiniDV ↗</span>
-                <span class="analog-photo-tag">CENTURY MK1 FISHEYE // 3CCD OPTICS</span>
+                <span class="analog-photo-tag">CENTURY MK1 FISHEYE // 3CCD</span>
               </div>
             </div>
           </div>
 
           <div class="sunakku-card">
-            <h3 class="sunakku-heading">COOL GADGETS & GEAR</h3>
+            <h3 class="sunakku-heading">OUR GADGETS & GEAR</h3>
             <p class="sunakku-copy">
               Sony MZ-99 MiniDisc Walkman, Game Boy Color Atomic Purple, Casio vintage watch, and retro audio gear.
             </p>
@@ -1290,6 +1391,154 @@ const CODEX_DATA = {
     },
     prev: "contact",
     next: "about"
+  }
+};
+
+/* ================= 10. INDIVIDUAL MEMBER DOSSIER RENDERER ================= */
+function renderMemberProfile(memberId) {
+  const member = MEMBERS_DATABASE.find(m => m.id === memberId) || MEMBERS_DATABASE[0];
+
+  return `
+  <div class="roster-navigation-header">
+    <button class="roster-back-btn" onclick="returnToRoster()">
+      <span>←</span> <span>RETURN TO OPERATIVE ROSTER</span>
+    </button>
+    <span style="font-family:'Space Mono', monospace; font-size:0.68rem; color:var(--text-silver);">
+      OPERATIVE DOSSIER // <strong style="color:var(--current-accent);">${member.name}</strong>
+    </span>
+  </div>
+
+  <div class="profile-full-wrapper">
+    <div class="fb-discord-cover">
+      <img class="fb-discord-cover-img" src="${member.cover}" alt="${member.name} Cover" onerror="this.src='${member.fallbackCover}'" />
+      <div class="fb-discord-cover-scrim"></div>
+
+      <div class="cover-top-controls">
+        <span class="cover-tag-callout">ART OF STUDIO ✦ OPERATIVE</span>
+        <span class="cover-tag-callout">${member.location}</span>
+      </div>
+
+      <div class="cover-bottom-caption">
+        <span class="cover-kicker">${member.specialty}</span>
+        <h2 class="cover-main-title">${member.role}</h2>
+      </div>
+    </div>
+
+    <div class="profile-bar-shelf">
+      <div class="profile-avatar-container">
+        <img class="profile-avatar-img" src="${member.avatar}" alt="${member.name}" onerror="this.src='${member.fallbackAvatar}'" />
+        <div class="profile-online-dot" style="background:${member.statusColor}; box-shadow:0 0 12px ${member.statusColor};" title="Status: Online & Ready"></div>
+      </div>
+
+      <div class="profile-text-content">
+        <div class="profile-primary-row">
+          <div>
+            <h1 class="profile-username">${member.name} <span class="profile-verified-star">✦</span></h1>
+            <span class="profile-user-handle">${member.handle} // ${member.uid}</span>
+          </div>
+          <div class="profile-action-btns">
+            <a href="${member.resume}" target="_blank" rel="noopener noreferrer" class="sunakku-cta-btn" style="background:var(--current-accent);">
+              📄 View CV [PDF]
+            </a>
+            <button class="sunakku-cta-btn" onclick="copyBufferInteraction(this, '${member.email}')">✉ Say Hello</button>
+            <button class="profile-sub-btn" onclick="copyBufferInteraction(this, '${member.email}')">Copy Email</button>
+          </div>
+        </div>
+
+        <div class="profile-badge-rack">
+          <span class="profile-role-chip">${member.level}</span>
+          <span class="profile-role-chip">${member.role}</span>
+          <span class="profile-role-chip">${member.specialty}</span>
+          <span class="profile-status-chip">● ${member.status}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sunakku-grid">
+    <div class="sunakku-left-col">
+      <div class="sunakku-card">
+        <h3 class="sunakku-heading">WHO I AM</h3>
+        ${member.bio.map(p => `<p class="sunakku-copy">${p}</p>`).join('')}
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;">
+          <a href="${member.resume}" target="_blank" rel="noopener noreferrer" class="sunakku-cta-btn">
+            📄 curriculum vitae [pdf]
+          </a>
+          <button class="sunakku-cta-btn" style="background:transparent; border:1px solid var(--current-accent); color:var(--current-accent);" onclick="copyBufferInteraction(this, '${member.email}')">
+            say hello ✉
+          </button>
+        </div>
+      </div>
+
+      <div class="sunakku-card">
+        <h3 class="sunakku-heading">OPERATIVE VITALS</h3>
+        <div class="sunakku-copy" style="font-family:'Space Mono', monospace; font-size:0.75rem; display:flex; flex-direction:column; gap:8px;">
+          <div>CURRENT STATUS: <strong style="color:var(--current-accent);">${member.vitals.status}</strong></div>
+          <div>EXPERIENCE: <strong>${member.vitals.experience}</strong></div>
+          <div>FOCUS: <strong>${member.vitals.focus}</strong></div>
+          <div>LOCATION: <strong>${member.vitals.location}</strong></div>
+          <div>LEVEL: <strong>${member.vitals.level}</strong></div>
+          <div>CURRENT MISSION: <strong>${member.vitals.mission}</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sunakku-right-col">
+      <div class="sunakku-card">
+        <h3 class="sunakku-heading">CHRONICLE & MILESTONES</h3>
+        <div style="display:flex; flex-direction:column; gap:14px; margin-top:6px;">
+          ${member.milestones.map((ms, idx) => `
+            <div style="border-left: 2px solid ${idx === 0 ? 'var(--current-accent)' : 'var(--glass-border)'}; padding-left: 14px;">
+              <span style="font-family:'Space Mono',monospace; font-size:0.65rem; color:${idx === 0 ? 'var(--current-accent)' : 'var(--text-muted)'};">${ms.period}</span>
+              <h4 style="color:#fff; font-size:0.95rem; margin:2px 0;">${ms.title}</h4>
+              <p class="sunakku-copy">${ms.desc}</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="sunakku-card">
+        <h3 class="sunakku-heading">PERSONAL RIG</h3>
+        <p class="sunakku-copy">${member.rig}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="member-switch-bar">
+    <span style="font-family:'Space Mono', monospace; font-size:0.7rem; color:var(--text-muted);">
+      SWITCH OPERATIVE DOSSIER:
+    </span>
+    <div class="member-switch-btns">
+      ${MEMBERS_DATABASE.map(m => `
+        <button class="osd-pill-btn ${m.id === member.id ? 'active' : ''}" style="${m.id === member.id ? 'border-color:var(--current-accent); color:var(--current-accent);' : ''}" onclick="viewMemberDossier('${m.id}')">
+          ✦ ${m.name} [${m.role.split('/')[0].trim()}]
+        </button>
+      `).join('')}
+      <button class="osd-pill-btn" onclick="returnToRoster()">
+        ☰ ALL MEMBERS
+      </button>
+    </div>
+  </div>
+  `;
+}
+
+window.viewMemberDossier = function(memberId) {
+  AudioSFX.playTapeClick();
+  selectedMemberId = memberId;
+  const readerContentBody = document.getElementById('reader-content-body');
+  if (readerContentBody) {
+    readerContentBody.innerHTML = CODEX_DATA.about.render();
+    readerContentBody.scrollTop = 0;
+  }
+};
+
+window.returnToRoster = function() {
+  AudioSFX.playTapeClick();
+  selectedMemberId = null;
+  const readerContentBody = document.getElementById('reader-content-body');
+  if (readerContentBody) {
+    readerContentBody.innerHTML = CODEX_DATA.about.render();
+    readerContentBody.scrollTop = 0;
   }
 };
 
@@ -1305,7 +1554,7 @@ window.openWalkmanDrawer = function() {
   AudioSFX.playTapeClick();
 };
 
-/* ================= 9. PROJECT RENDERING & FILTERS ================= */
+/* ================= 11. PROJECT RENDERING & FILTERS ================= */
 function renderProjectCards(list) {
   return list.map((proj) => {
     const origIdx = PROJECTS_DATABASE.findIndex(p => p.id === proj.id);
@@ -1366,7 +1615,7 @@ window.filterSkills = function(domain, btnElement) {
   });
 };
 
-/* ================= 10. ENHANCED PROJECT MODAL (3-PART SPEC) ================= */
+/* ================= 12. PROJECT MODAL INSPECTOR ================= */
 const rack = document.getElementById('slender-rack');
 const cards = document.querySelectorAll('.slender-card');
 const menuView = document.getElementById('menu-view');
@@ -1432,16 +1681,12 @@ window.openProjectModal = function(index) {
 
   modalTitle.textContent = `SPECIFICATION INSPECTOR // ${proj.name.toUpperCase()}`;
   modalBody.innerHTML = `
-    <!-- Top Visual Asset -->
     <div style="width:100%; height:190px; border-radius:6px; overflow:hidden; border:1px solid var(--glass-border); background:#000;">
       <img src="${proj.thumb}" alt="${proj.name}" onerror="this.src='${proj.fallback}'" style="width:100%; height:100%; object-fit:cover;" />
     </div>
 
-    <!-- PART 1: SYSTEM SPECS -->
     <div class="case-block-section">
-      <div class="case-block-title">
-        <span>⚙</span> PART 1 // SYSTEM SPECS & ARCHITECTURE
-      </div>
+      <div class="case-block-title"><span>⚙</span> PART 1 // SYSTEM SPECS & ARCHITECTURE</div>
       <div class="tech-spec-rack">
         ${proj.tech.map(t => `<span class="tech-spec-pill highlight">${t}</span>`).join('')}
       </div>
@@ -1464,11 +1709,8 @@ window.openProjectModal = function(index) {
       </p>
     </div>
 
-    <!-- PART 2: MISSION BRIEF -->
     <div class="case-block-section">
-      <div class="case-block-title">
-        <span>🎯</span> PART 2 // MISSION BRIEF & OBJECTIVES
-      </div>
+      <div class="case-block-title"><span>🎯</span> PART 2 // MISSION BRIEF & OBJECTIVES</div>
       <p style="font-size:0.83rem; line-height:1.55; color:var(--text-silver); font-weight:500;">
         ${proj.missionBrief}
       </p>
@@ -1477,7 +1719,6 @@ window.openProjectModal = function(index) {
       </p>
     </div>
 
-    <!-- PART 3: EXTERNAL LINKS (HIGH-CONTRAST RETRO BUTTONS) -->
     <div class="modal-actions-rack">
       <a href="${proj.liveUrl}" target="_blank" rel="noopener noreferrer" class="retro-link-btn btn-demo">
         <span>↗</span> [ LIVE DEMO ]
@@ -1524,7 +1765,7 @@ window.openRomInspector = function(title, description) {
   openRetroModal();
 };
 
-/* ================= 11. WORLD CLOCKS & REC TIMERS ================= */
+/* ================= 13. CLOCKS & TIMERS ================= */
 let recSeconds = 1452;
 const timeFormatters = {
   tokyo: new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', second: '2-digit' }),
@@ -1564,7 +1805,7 @@ function updateWorldClocks() {
   if (cNY) cNY.textContent = timeFormatters.ny.format(now);
 }
 
-/* ================= 12. HUD TOGGLES & THEME SWITCHERS ================= */
+/* ================= 14. HUD CONTROLS ================= */
 function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('portfolio-theme', theme);
@@ -1619,7 +1860,7 @@ if (creditsBtn) {
     modalBody.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:12px;">
         <p style="font-size:0.85rem; line-height:1.6; color:var(--text-silver);">
-          Just a quick note: all GIFs, photos, aesthetic edits, and visuals used across this portfolio are sourced from <strong>Pinterest</strong> and the web. They are used purely for personal student learning, UI practice, and creative non-commercial portfolio presentation.
+          All GIFs, photos, aesthetic edits, and visuals used across this studio portfolio are sourced from <strong>Pinterest</strong> and the web. They are used purely for student learning, collaborative UI practice, and non-commercial portfolio presentation.
         </p>
         
         <div style="background:rgba(0,0,0,0.35); border:1px solid var(--glass-border); padding:12px 16px; border-radius:6px;">
@@ -1627,12 +1868,12 @@ if (creditsBtn) {
             ✦ RESPECT TO ORIGINAL CREATORS
           </span>
           <p style="font-size:0.78rem; line-height:1.55; color:var(--text-silver);">
-            All rights, copyright, and credit belong entirely to the original artists, photographers, and creators who made them.
+            All rights and credit belong entirely to the original artists, photographers, and creative directors.
           </p>
         </div>
 
         <p style="font-size:0.8rem; line-height:1.55; color:var(--text-muted);">
-          If you are the owner of any photo or GIF featured here and would like proper credit linked, or if you prefer having it removed, please reach out via the contact form or email me at <span style="color:var(--current-accent);">artof.lab.studio.@gmail.com</span> and I will gladly take care of it right away.
+          If you are the owner of any artwork featured here and would like attribution or removal, please contact our studio at <span style="color:var(--current-accent);">artof.lab.studio@gmail.com</span>.
         </p>
       </div>
     `;
@@ -1648,7 +1889,7 @@ function showToast(message) {
   setTimeout(() => { toast.classList.remove('show'); }, 2500);
 }
 
-/* ================= 13. RETRO CLIPBOARD BUFFER MICRO-INTERACTION ================= */
+/* ================= 15. BUFFER MICRO-INTERACTION ================= */
 window.copyBufferInteraction = function(triggerEl, text) {
   if (!triggerEl) return;
   
@@ -1681,23 +1922,23 @@ function triggerCrtTransition(callback) {
   }, 140);
 }
 
-/* ================= 14. CHAPTER NAVIGATION ================= */
+/* ================= 16. CHAPTER NAVIGATION ================= */
 function openChapter(key) {
   const data = CODEX_DATA[key];
   if (!data) return;
 
   activeChapter = key;
-  particlesActive = false;
+  particlesActive = false; // Conserve GPU on mobile while reading
 
   document.documentElement.style.setProperty('--current-accent', data.accent);
-  document.title = `ART OF DRAKE ★ ${data.title}`;
+  document.title = `ART OF STUDIO ★ ${data.title}`;
 
   if (backdropImgTarget) {
     backdropImgTarget.style.backgroundImage = `url('${data.coverImg}'), url('${data.fallbackCover}')`;
   }
 
   if (readerBadge) readerBadge.textContent = data.num;
-  if (readerStatusTag) readerStatusTag.textContent = `ART OF DRAKE // ${data.category.toUpperCase()}`;
+  if (readerStatusTag) readerStatusTag.textContent = `ART OF STUDIO // ${data.category.toUpperCase()}`;
 
   if (readerDiscIcon) {
     readerDiscIcon.style.transform = 'rotate(180deg)';
@@ -1737,6 +1978,7 @@ function closeReader() {
     }
     if (menuView) menuView.classList.remove('dismissed');
     particlesActive = true;
+    selectedMemberId = null; // Reset member view back to roster
     document.title = "ART OF STUDIO ★ // SYSTEM CORE v4.2";
     activeChapter = null;
     history.pushState(null, '', window.location.pathname);
@@ -1755,7 +1997,7 @@ if (nextBtn) {
   });
 }
 
-/* ================= 15. CARD LISTENERS & CAROUSEL ================= */
+/* ================= 17. MAIN MENU CARD LISTENERS ================= */
 cards.forEach(card => {
   card.addEventListener('mouseenter', () => {
     if (rack) rack.classList.add('has-hover');
@@ -1790,7 +2032,7 @@ window.scrollProjectCarousel = function(dir) {
   track.scrollBy({ left: amount, behavior: 'smooth' });
 };
 
-/* ================= 16. SKILLS RADAR TELEMETRY ================= */
+/* ================= 18. SKILLS RADAR CHART ================= */
 function initRadarChart() {
   const radarCanvas = document.getElementById('skills-radar-canvas');
   const tooltip = document.getElementById('radar-diag-tooltip');
@@ -1800,14 +2042,13 @@ function initRadarChart() {
   const center = size / 2;
   const radius = 80;
 
-  // Realistic skills telemetry based on 2nd year BSIT student level
   const skills = [
-    { label: "UI / Design", value: 0.80 },
-    { label: "CSS3 Styling", value: 0.78 },
-    { label: "HTML5 Core", value: 0.75 },
-    { label: "JavaScript", value: 0.65 },
-    { label: "Java (OOP)", value: 0.55 },
-    { label: "SQLite / DB", value: 0.45 }
+    { label: "UI / Design", value: 0.82 },
+    { label: "CSS3 Styling", value: 0.80 },
+    { label: "HTML5 Core", value: 0.80 },
+    { label: "JavaScript", value: 0.72 },
+    { label: "Java (OOP)", value: 0.62 },
+    { label: "SQLite / DB", value: 0.55 }
   ];
 
   function drawRadar() {
@@ -1873,13 +2114,13 @@ function initRadarChart() {
     let angle = Math.atan2(y, x) + Math.PI / 2;
     if (angle < 0) angle += Math.PI * 2;
     const index = Math.floor((angle / (Math.PI * 2)) * skills.length) % skills.length;
-    if (tooltip) {
+    if (tooltip && skills[index]) {
       tooltip.textContent = `DIAGNOSTIC: ${skills[index].label.toUpperCase()} — ${(skills[index].value * 100).toFixed(0)}% PROFICIENCY`;
     }
   };
 }
 
-/* ================= 17. CONTACT FORM & INTERACTIVE TERMINAL ================= */
+/* ================= 19. DISPATCH FORM & TERMINAL ================= */
 window.sendDispatch = async function() {
   const name = document.getElementById('disp-name');
   const email = document.getElementById('disp-email');
@@ -1935,14 +2176,16 @@ function initTerminal() {
       AudioSFX.playBlip(750, 'triangle', 0.03);
       const userLine = document.createElement('div');
       userLine.className = 'terminal-line';
-      userLine.textContent = `operator@drake:~$ ${rawCmd}`;
+      userLine.textContent = `operator@studio:~$ ${rawCmd}`;
       history.appendChild(userLine);
 
       const responseLine = document.createElement('div');
       responseLine.className = 'terminal-line output-accent';
 
       if (command === 'help') {
-        responseLine.innerHTML = "COMMAND MATRIX:\n • help       - Display directives\n • specs      - Terminal system info\n • resume     - Resume summary\n • email      - Direct email relay\n • matrix     - Digital rain toggle\n • konami     - 24K Gold theme override\n • eject      - Eject Walkman tray\n • play [1-2] - Play track\n • pause      - Pause playback\n • clear      - Clear terminal screen";
+        responseLine.innerHTML = "STUDIO DIRECTIVES:\n • help       - Show commands\n • roster     - List active studio operatives\n • specs      - Studio tech stack & system specs\n • deck       - Portfolio deck link\n • email      - Studio relay address\n • matrix     - Toggle digital rain\n • konami     - 24K Gold overclock\n • eject      - Walkman MiniDisc tray\n • play [1-2] - Play audio track\n • pause      - Pause audio\n • clear      - Clear terminal history";
+      } else if (command === 'roster' || command === 'members' || command === 'team') {
+        responseLine.textContent = `STUDIO OPERATIVE ROSTER [${MEMBERS_DATABASE.length} MEMBERS]:\n${MEMBERS_DATABASE.map(m => ` • ${m.name} // ${m.role} (${m.level})`).join('\n')}`;
       } else if (command === 'specs' || command === 'neofetch') {
         responseLine.textContent = `
     ___   ___  ___  _  __ ___ 
@@ -1950,15 +2193,15 @@ function initTerminal() {
   / // // // // __ ||   // _/  
  /____//_/|_//_/ |_||_|\\_\\___/  
  -----------------------------
- USER: Drake [BSIT Year 2]
- OS: Cyber Codex v4.2
- STACK: HTML5 / CSS3 / JavaScript / Java / SQLite
- FOCUS: Web Design & Front-End Development
- AUDIO: ATRAC Engine / WebAudio API`;
-      } else if (command === 'resume' || command === 'cat resume') {
-        responseLine.textContent = `[DRAKE // 2ND YEAR BSIT STUDENT]\n• Front-End & Web Design focus\n• HTML5, CSS3, JavaScript, Java, SQLite\n• PDF CV: Click 'RESUME.PDF' in top HUD`;
+ STUDIO: Art of Studio
+ OPERATIVES: Drake (Front-End) & Alex (Systems)
+ CORE: Cyber Codex v4.2 [Group Collective Edition]
+ STACK: HTML5 / CSS3 / ES6+ / Java / SQLite / WebAudio
+ STATUS: Active & leveling up`;
+      } else if (command === 'deck' || command === 'resume') {
+        responseLine.textContent = `[ART OF STUDIO // COLLECTIVE DECK]\n• Front-End, UI/UX & Systems Architecture\n• Download PDF CV/Deck via the top HUD bar`;
       } else if (command === 'email') {
-        responseLine.textContent = "DIRECT FREQUENCY: hello@drakeportfolio.dev";
+        responseLine.textContent = "STUDIO RELAY: artof.lab.studio@gmail.com";
       } else if (command === 'matrix') {
         matrixEasterEggActive = true;
         particlesActive = true;
@@ -1994,7 +2237,7 @@ function initTerminal() {
         input.value = "";
         return;
       } else {
-        responseLine.textContent = `COMMAND NOT RECOGNIZED: '${rawCmd}'. Type 'help' for directives.`;
+        responseLine.textContent = `DIRECTIVE UNKNOWN: '${rawCmd}'. Type 'help' for command matrix.`;
       }
 
       history.appendChild(responseLine);
@@ -2004,7 +2247,7 @@ function initTerminal() {
   });
 }
 
-/* ================= 18. SHORTCUTS & KONAMI CODE ================= */
+/* ================= 20. SHORTCUTS & KONAMI CODE ================= */
 const konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
 let konamiIndex = 0;
 
@@ -2056,7 +2299,7 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-/* ================= 19. MOBILE TOUCH SWIPE NAVIGATION ================= */
+/* ================= 21. MOBILE TOUCH SWIPE NAVIGATION ================= */
 let touchStartX = 0;
 window.addEventListener('touchstart', (e) => {
   touchStartX = e.changedTouches[0].screenX;
@@ -2076,7 +2319,7 @@ window.addEventListener('touchend', (e) => {
   }
 }, { passive: true });
 
-/* ================= 20. HASH ROUTING ================= */
+/* ================= 22. HASH ROUTING ================= */
 window.addEventListener('DOMContentLoaded', () => {
   const hash = window.location.hash.replace('#', '');
   if (CODEX_DATA[hash]) openChapter(hash);
